@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/ThemedText";
 import AppContainer from "@/components/index/AppContainer";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useThemeColors } from "@/hooks/useThemeColor";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import ProfileSection from "@/components/index/ProfileSection";
@@ -24,12 +24,12 @@ export default function HomeScreen() {
           <GoalSection />
         </View>
         <TodaysWordSection />
-        <Pressable style={[styles.continueButton, { backgroundColor: colors.accent_blue }]}>
+        <TouchableOpacity style={[styles.continueButton, { backgroundColor: colors.accent_blue }]} activeOpacity={0.8}>
           <FontAwesome name={"play"} size={18} color={colors.background_blue_2}/>
           <Text style={[{ color: colors.background_blue_2 }, styles.continueButtonText]}>
             Continue Learning
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </AppContainer>
   );

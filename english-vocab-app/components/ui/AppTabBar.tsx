@@ -1,9 +1,10 @@
-import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { StyleSheet, View } from "react-native";
 import TabBarItem from "@/components/ui/TabBarItem";
 import { useThemeColors } from "@/hooks/useThemeColor";
+import { MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
 
-export default function AppTabBar({ state, navigation }: BottomTabBarProps) {
+
+export default function AppTabBar({ state, navigation }: MaterialTopTabBarProps) {
   const colors = useThemeColors();
 
   return (

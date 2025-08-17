@@ -5,7 +5,7 @@ import { FontAwesome6 } from "@expo/vector-icons";
 
 export default function TodaysWordSection() {
   return (
-    <TouchableOpacity activeOpacity={0.8}>
+    <TouchableOpacity activeOpacity={0.6}>
       <SectionBox style={{ gap: 20 }}>
         <FontAwesome6 name="book" size={34} color="white"/>
         <View>

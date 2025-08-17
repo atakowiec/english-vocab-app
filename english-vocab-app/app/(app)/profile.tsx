@@ -1,12 +1,15 @@
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
+import AppContainer from "@/components/index/AppContainer";
 
 export default function ProfileScreen() {
   return (
-    <ThemedSafeAreaView style={{flex: 1}}>
+    <AppContainer>
       <ThemedText type={"title"}>
-        test
+        Your Profile
       </ThemedText>
-    </ThemedSafeAreaView>
+      <ThemedText type={"default"} colorKey={"text_secondary"}>
+        You look great today!
+      </ThemedText>
+    </AppContainer>
   );
 }

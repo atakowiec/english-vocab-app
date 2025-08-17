@@ -10,7 +10,7 @@ export default function ProfileSection() {
   const router = useRouter();
 
   return (
-    <TouchableOpacity activeOpacity={0.8} onPress={() => router.replace("/(app)/profile")}>
+    <TouchableOpacity activeOpacity={0.6} onPress={() => router.push("/(app)/profile")}>
       <SectionBox style={styles.profileSection}>
         <FontAwesome name="user" size={40} color={"white"}/>
         <View style={styles.righBox}>
