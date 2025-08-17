@@ -1,5 +1,5 @@
 import { ImageStyle, StyleSheet } from "react-native";
-import logo from "../assets/images/logo.png";
+import logo from "@/assets/images/logo.png";
 import { Image } from "expo-image";
 
 export default function Logo({ styles, width }: { styles?: ImageStyle, width?: number }) {
@@ -15,6 +15,6 @@ const logoStyles = StyleSheet.create({
   logo: {
     width: 220,
     height: 60,
-    contentFit: "contain",
+    objectFit: "contain",
   }
 })

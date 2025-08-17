@@ -12,7 +12,7 @@ export default function ThemedButton({ style, children, ...rest }: ThemedButtonP
 
   return (
     <Pressable
-      style={[style, styles.button, { backgroundColor: colors.accent_blue }]}
+      style={[styles.button, { backgroundColor: colors.accent_blue }, style]}
       {...rest}
     >
       {typeof children === "string" ? (
