@@ -5,7 +5,7 @@ import { Image } from "expo-image";
 export default function Logo({ styles, width }: { styles?: ImageStyle, width?: number }) {
   const inlineStyles = width ? {
     width: width,
-    height: width * 55 / 220
+    height: width * 65 / 220
   } : {};
 
   return <Image source={logo} style={[logoStyles.logo, inlineStyles, styles]}/>
@@ -14,7 +14,7 @@ export default function Logo({ styles, width }: { styles?: ImageStyle, width?: n
 const logoStyles = StyleSheet.create({
   logo: {
     width: 220,
-    height: 60,
+    height: 65,
     objectFit: "contain",
   }
 })

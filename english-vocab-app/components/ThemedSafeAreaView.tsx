@@ -11,5 +11,5 @@ export function ThemedSafeAreaView({ style, colorKey, ...otherProps }: ThemedVie
   const colors = useThemeColors();
   const backgroundColor = colors[colorKey ?? "background_blue_1"];
 
-  return <SafeAreaView style={[{ backgroundColor }, style]} {...otherProps} />;
+  return <SafeAreaView style={[{ backgroundColor, flex: 1 }, style]} {...otherProps} />;
 }

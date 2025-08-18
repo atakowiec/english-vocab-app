@@ -5,10 +5,10 @@ import { ReactNode } from "react";
 type ThemedButtonProps = PressableProps & {
   style?: StyleProp<ViewStyle>;
   children: ReactNode;
-  type: "primary" | "secondary";
+  type?: "primary" | "secondary";
 };
 
-export default function ThemedButton({ style, children, type, ...rest }: ThemedButtonProps) {
+export default function ThemedButton({ style, children, type = "primary", ...rest }: ThemedButtonProps) {
   const colors = useThemeColors()
 
   const backgroundColor = type === "primary" ? colors.accent_blue : colors.background_blue_2;

@@ -1,14 +1,19 @@
-import { StyleSheet, TextInput } from "react-native";
+import { StyleSheet, TextInput,TextInputProps } from "react-native";
 import { useThemeColors } from "@/hooks/useThemeColor";
-import { TextInputProps } from "react-native/Libraries/Components/TextInput/TextInput";
+import { Ref } from "react";
 
-export default function ThemedInput({style, ...rest}: TextInputProps) {
+type ThemedInputProps = TextInputProps & {
+  ref?: Ref<TextInput>
+}
+
+export default function ThemedInput({style, ref, ...rest}: ThemedInputProps) {
   const colors = useThemeColors()
 
   return (
     <TextInput
       placeholderTextColor={colors.text_secondary}
-      style={[style, styles.input, {backgroundColor: colors.background_blue_3}]}
+      ref={ref}
+      style={[styles.input, {backgroundColor: colors.background_blue_3}, style]}
       {...rest}
     />
   )

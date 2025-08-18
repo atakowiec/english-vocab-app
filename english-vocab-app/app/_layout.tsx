@@ -6,6 +6,13 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { AuthContextProvider } from "@/context/AuthContext";
+
+const client = new ApolloClient({
+  uri: 'http://192.168.1.11:3000/graphql',
+  cache: new InMemoryCache()
+});
 
 export default function RootLayout() {
   const colorScheme = useColorScheme()
@@ -19,16 +26,20 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(app)" options={{ headerShown: false }}/>
-          <Stack.Screen name="(auth)" options={{ headerShown: false }}/>
-          <Stack.Screen name="+not-found"/>
-        </Stack>
-        <StatusBar style="auto"/>
-      </ThemeProvider>
-    </SafeAreaProvider>
-  )
-    ;
+    <ApolloProvider client={client}>
+      <AuthContextProvider>
+        <SafeAreaProvider>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }}/>
+              <Stack.Screen name="(app)" options={{ headerShown: false }}/>
+              <Stack.Screen name="(auth)" options={{ headerShown: false }}/>
+              <Stack.Screen name="+not-found"/>
+            </Stack>
+            <StatusBar style="auto"/>
+          </ThemeProvider>
+        </SafeAreaProvider>
+      </AuthContextProvider>
+    </ApolloProvider>
+  );
 }

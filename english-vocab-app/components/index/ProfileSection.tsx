@@ -4,10 +4,12 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { useThemeColors } from "@/hooks/useThemeColor";
 import { useRouter } from "expo-router";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ProfileSection() {
   const colors = useThemeColors();
   const router = useRouter();
+  const { user } = useAuth()!
 
   return (
     <TouchableOpacity activeOpacity={0.6} onPress={() => router.push("/(app)/profile")}>
@@ -16,7 +18,7 @@ export default function ProfileSection() {
         <View style={styles.righBox}>
           <View style={styles.usernameBox}>
             <ThemedText type={"subtitle"}>
-              atakowiec
+              {user?.name}
             </ThemedText>
             <View style={[styles.levelLabel, { backgroundColor: colors.accent_blue }]}>
               <ThemedText colorKey={"background_blue_2"} style={{ fontSize: 16, fontWeight: 600 }}>
