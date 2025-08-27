@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { User } from './user/user.entity';
 import { ApolloDriver } from '@nestjs/apollo';
+import { ScrapperModule } from './scrapper/scrapper.module';
+import { WordsModule } from './words/words.module';
+import WordStatus from './scrapper/word-status.entity';
+import Word from './words/word.entity';
 
 @Module({
   imports: [
@@ -22,13 +24,15 @@ import { ApolloDriver } from '@nestjs/apollo';
       username: 'user',
       password: 'password',
       database: 'english_vocab_app',
-      entities: [User],
+      entities: [User, WordStatus, Word],
       synchronize: true,
     }),
     UserModule,
     AuthModule,
+    ScrapperModule,
+    WordsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
