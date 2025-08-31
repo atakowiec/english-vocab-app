@@ -1,18 +1,46 @@
 import { Injectable } from '@nestjs/common';
-import Word from './word.entity';
+import WordEntity from './word.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class WordsService {
   constructor(
-    @InjectRepository(Word)
-    private readonly repository: Repository<Word>,
+    @InjectRepository(WordEntity)
+    private readonly repository: Repository<WordEntity>,
   ) {
     // empty
   }
 
-  async save(word: Omit<Word, 'id'>) {
+  async save(word: Omit<WordEntity, 'id'>) {
     return await this.repository.save(word);
+  }
+
+  async findSimilarEnWords(word: WordEntity): Promise<WordEntity[]> {
+    return await this.repository
+      .createQueryBuilder('word')
+      .where('CHAR_LENGTH(word.word_en) BETWEEN :length_min AND :length_max', {
+        length_min: word.word_en.length - 1,
+        length_max: word.word_en.length + 1,
+      })
+      .andWhere('word.base_word_en != :baseWord', { baseWord: word.base_word_en })
+      .andWhere('word.type = :type', { type: word.type })
+      .orderBy('RAND()')
+      .limit(3)
+      .getMany();
+  }
+
+  async findSimilarPlWords(word: WordEntity) {
+    return await this.repository
+      .createQueryBuilder('word')
+      .where('CHAR_LENGTH(word.word_pl) BETWEEN :length_min AND :length_max', {
+        length_min: word.word_pl.length - 1,
+        length_max: word.word_pl.length + 1,
+      })
+      .andWhere('word.base_word_en != :baseWord', { baseWord: word.base_word_en })
+      .andWhere('word.type = :type', { type: word.type })
+      .orderBy('RAND()')
+      .limit(3)
+      .getMany();
   }
 }

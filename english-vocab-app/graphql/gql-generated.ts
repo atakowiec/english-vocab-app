@@ -24,6 +24,14 @@ export type AuthPayload = {
   user: User;
 };
 
+export type GameWord = {
+  __typename?: 'GameWord';
+  similarEnWords: Array<Scalars['String']['output']>;
+  similarPlWords: Array<Scalars['String']['output']>;
+  word: WordEntity;
+  wordLearnStatus?: Maybe<WordLearnStatus>;
+};
+
 export type LoginInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -53,6 +61,7 @@ export type MutationRegisterArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  getNextWords: Array<GameWord>;
   hello: Scalars['String']['output'];
 };
 
@@ -67,6 +76,29 @@ export type User = {
   email: Scalars['String']['output'];
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
+};
+
+export type WordEntity = {
+  __typename?: 'WordEntity';
+  base_word_en: Scalars['String']['output'];
+  definition_en: Scalars['String']['output'];
+  examples: Scalars['String']['output'];
+  id: Scalars['Float']['output'];
+  other_forms: Scalars['String']['output'];
+  tags: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+  word_en: Scalars['String']['output'];
+  word_pl: Scalars['String']['output'];
+};
+
+export type WordLearnStatus = {
+  __typename?: 'WordLearnStatus';
+  id: Scalars['Int']['output'];
+  learned: Scalars['Boolean']['output'];
+  speedModeCorrectAnswers: Scalars['Int']['output'];
+  speedModeWrongAnswers: Scalars['Int']['output'];
+  user: User;
+  word: WordEntity;
 };
 
 export type RefreshTokenMutationVariables = Exact<{
@@ -92,6 +124,11 @@ export type LoginMutationVariables = Exact<{
 
 
 export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', accessToken: string, refreshToken: string, user: { __typename?: 'User', email: string, name: string, id: number } } };
+
+export type GetNextWordsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetNextWordsQuery = { __typename?: 'Query', getNextWords: Array<{ __typename?: 'GameWord', similarEnWords: Array<string>, similarPlWords: Array<string>, word: { __typename?: 'WordEntity', id: number, definition_en: string, word_en: string, word_pl: string, examples: string, type: string, base_word_en: string, other_forms: string, tags: string }, wordLearnStatus?: { __typename?: 'WordLearnStatus', speedModeCorrectAnswers: number, speedModeWrongAnswers: number } | null }> };
 
 
 export const RefreshTokenDocument = gql`
@@ -206,3 +243,58 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const GetNextWordsDocument = gql`
+    query getNextWords {
+  getNextWords {
+    word {
+      id
+      definition_en
+      word_en
+      word_pl
+      examples
+      type
+      base_word_en
+      other_forms
+      tags
+    }
+    similarEnWords
+    similarPlWords
+    wordLearnStatus {
+      speedModeCorrectAnswers
+      speedModeWrongAnswers
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetNextWordsQuery__
+ *
+ * To run a query within a React component, call `useGetNextWordsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetNextWordsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetNextWordsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetNextWordsQuery(baseOptions?: Apollo.QueryHookOptions<GetNextWordsQuery, GetNextWordsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetNextWordsQuery, GetNextWordsQueryVariables>(GetNextWordsDocument, options);
+      }
+export function useGetNextWordsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetNextWordsQuery, GetNextWordsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetNextWordsQuery, GetNextWordsQueryVariables>(GetNextWordsDocument, options);
+        }
+export function useGetNextWordsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetNextWordsQuery, GetNextWordsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetNextWordsQuery, GetNextWordsQueryVariables>(GetNextWordsDocument, options);
+        }
+export type GetNextWordsQueryHookResult = ReturnType<typeof useGetNextWordsQuery>;
+export type GetNextWordsLazyQueryHookResult = ReturnType<typeof useGetNextWordsLazyQuery>;
+export type GetNextWordsSuspenseQueryHookResult = ReturnType<typeof useGetNextWordsSuspenseQuery>;
+export type GetNextWordsQueryResult = Apollo.QueryResult<GetNextWordsQuery, GetNextWordsQueryVariables>;

@@ -45,14 +45,14 @@ export function evaluate(): FetchResponse {
 
   const words = allTypes
     .map((type) => {
-      let word = type.querySelector<HTMLElement>('.di-title')!.innerText;
+      const word = type.querySelector<HTMLElement>('.di-title')!.innerText;
       const typeText = type.querySelector<HTMLElement>('.pos.dpos')?.innerText;
       otherForms.push(...querySelectorAllText('.inf.dinf', type), word);
 
       return [...type.querySelectorAll<HTMLElement>('.sense-block')].map((translationBlock) => {
         const isDifferent = !!translationBlock.querySelector('.sense-body .dphrase-block');
         const otherWord = translationBlock.querySelector<HTMLElement>('.phrase.dphrase')?.innerText;
-        word = isDifferent && otherWord ? otherWord : word;
+        const currentWord = isDifferent && otherWord ? otherWord : word;
 
         const tags = querySelectorAllText('.gc.dgc', translationBlock);
         const level = translationBlock.querySelector<HTMLElement>('.def-head .epp-xref')?.innerText;
@@ -61,14 +61,14 @@ export function evaluate(): FetchResponse {
         const examples = querySelectorAllText('.def-block .examp.dexamp .eg.deg', translationBlock);
 
         return {
-          word,
+          word: currentWord,
           tags,
           definition,
           translation,
           level,
           examples,
           type: typeText,
-          otherForms: [...new Set([...otherForms, word])],
+          otherForms: [...new Set([...otherForms, currentWord])],
         };
       });
     })

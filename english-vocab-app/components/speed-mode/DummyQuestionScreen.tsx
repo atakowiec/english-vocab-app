@@ -1,0 +1,105 @@
+import { ThemedText } from "@/components/ThemedText";
+import { Animated, Dimensions, TouchableOpacity, View } from "react-native";
+import { useThemeColors } from "@/hooks/useThemeColor";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useSpeedModeData, WordType } from "@/context/SpeedModeContext";
+import { styles } from "@/styles/speed-test"
+import { useEffect, useRef, useState } from "react";
+import Explaination from "@/components/speed-mode/Explaination";
+
+const WINDOW_WIDTH = Dimensions.get("window").width;
+
+/**
+ * Dummy question screen is a screen that appears just for slide animation
+ * @constructor
+ */
+export default function DummyQuestionScreen() {
+  const colors = useThemeColors()
+  const { currentWord, stage } = useSpeedModeData()
+  const currentWordRef = useRef<WordType>(currentWord)
+  const [prevWord, setPrevWord] = useState<WordType>()
+  const translateX = useRef(new Animated.Value(0)).current;
+  const rotateZValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    setPrevWord(currentWordRef.current)
+
+    currentWordRef.current = currentWord
+  }, [currentWord]);
+
+  useEffect(() => {
+    if (stage === "swipe_next") {
+      Animated.timing(translateX, {
+        toValue: WINDOW_WIDTH * 1.5,
+        duration: 400,
+        useNativeDriver: false,
+      }).start()
+
+      Animated.timing(rotateZValue, {
+        toValue: -1,
+        duration: 400,
+        useNativeDriver: false,
+      }).start()
+    }
+
+    if (stage === "answering") {
+      rotateZValue.setValue(0);
+      translateX.setValue(0);
+    }
+  }, [stage]);
+
+  if (stage !== "swipe_next")
+    return null
+
+  function isNewMeaning() {
+    return prevWord &&
+      (prevWord.wordLearnStatus?.speedModeCorrectAnswers ?? 0)
+      + (prevWord.wordLearnStatus?.speedModeWrongAnswers ?? 0) === 0
+  }
+
+  const rotateZ = rotateZValue.interpolate({
+    inputRange: [-1, 0],
+    outputRange: ["45deg", "0deg"]
+  })
+
+  return (
+    <Animated.View style={[styles.box, {
+      backgroundColor: colors.background_blue_1,
+      zIndex: 1000,
+      transform: [{ translateX }, { rotateZ }]
+    }]}>
+      <View style={styles.optionsBox}>
+        {
+          isNewMeaning() &&
+            <View style={[styles.optionButton, styles.newMeaning, {
+              backgroundColor: colors.background_blue_3,
+              borderColor: colors.accent_blue
+            }]}>
+                <ThemedText>
+                    New meaning
+                </ThemedText>
+            </View>
+        }
+        <View/>
+        <TouchableOpacity style={[styles.optionButton, { backgroundColor: colors.background_blue_3 }]}
+                          activeOpacity={0.8}>
+          <MaterialIcons name="report" size={24} color="white"/>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.wordBox}>
+        <ThemedText type={"title"} style={{ textAlign: "center" }}>
+          {prevWord!.wordText}
+        </ThemedText>
+      </View>
+      <View style={[styles.answersBox, {justifyContent: "flex-end", marginBottom: 10}]}>
+        <TouchableOpacity style={[styles.answerButton, { backgroundColor: colors.green }]}
+                          activeOpacity={0.8}>
+          <ThemedText>
+            {prevWord?.correctAnswer}
+          </ThemedText>
+        </TouchableOpacity>
+      </View>
+      <Explaination word={prevWord} dummy={true}/>
+    </Animated.View>
+  )
+}

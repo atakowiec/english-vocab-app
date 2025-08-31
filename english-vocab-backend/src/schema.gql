@@ -2,6 +2,27 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type WordEntity {
+  id: Float!
+  word_en: String!
+  word_pl: String!
+  base_word_en: String
+  definition_en: String
+  type: String
+  tags: String!
+  examples: String!
+  other_forms: String!
+}
+
+type WordLearnStatus {
+  id: Int!
+  word: WordEntity!
+  user: User!
+  learned: Boolean!
+  speedModeCorrectAnswers: Int!
+  speedModeWrongAnswers: Int!
+}
+
 type User {
   id: Int!
   email: String!
@@ -14,8 +35,16 @@ type AuthPayload {
   user: User!
 }
 
+type GameWord {
+  word: WordEntity!
+  wordLearnStatus: WordLearnStatus
+  similarEnWords: [String!]!
+  similarPlWords: [String!]!
+}
+
 type Query {
   hello: String!
+  getNextWords: [GameWord!]!
 }
 
 type Mutation {

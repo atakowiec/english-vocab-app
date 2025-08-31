@@ -21,17 +21,12 @@ export class AuthResolver {
 
   @Mutation(() => AuthPayload)
   async login(@Args('input') input: LoginInput): Promise<AuthPayload> {
-    const user = await this.authService.validateUser(
-      input.email,
-      input.password,
-    );
+    const user = await this.authService.validateUser(input.email, input.password);
     return this.authService.login(user);
   }
 
   @Mutation(() => AuthPayload)
-  async refreshToken(
-    @Args('refreshToken') refreshToken: string,
-  ): Promise<AuthPayload> {
+  async refreshToken(@Args('refreshToken') refreshToken: string): Promise<AuthPayload> {
     return this.authService.varifyRefreshToken(refreshToken);
   }
 }

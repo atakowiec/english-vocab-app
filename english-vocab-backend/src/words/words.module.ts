@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { WordsService } from './words.service';
 import { WordsController } from './words.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Word from './word.entity';
+import WordEntity from './word.entity';
 import WordStatus from '../scrapper/word-status.entity';
+import WordLearnStatus from './word-learn-status';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Word, WordStatus])],
+  imports: [TypeOrmModule.forFeature([WordEntity, WordStatus, WordLearnStatus])],
   providers: [WordsService],
   controllers: [WordsController],
   exports: [WordsService],

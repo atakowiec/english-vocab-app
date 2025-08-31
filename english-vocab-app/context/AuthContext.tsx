@@ -8,6 +8,7 @@ import {
   useRefreshTokenMutation,
   useRegisterMutation
 } from "@/graphql/gql-generated";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type AuthContextPayload = {
   accessToken: string | null,
@@ -33,6 +34,16 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
     handleRefreshToken()
   }, [])
 
+  useEffect(() => {
+    (async () => {
+      if (!accessToken) {
+        await AsyncStorage.removeItem("access_token")
+      } else {
+        await AsyncStorage.setItem("access_token", accessToken)
+      }
+    })()
+  }, [accessToken]);
+
   async function handleRefreshToken() {
     const token = await getToken()
 
@@ -47,7 +58,8 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
       const refresh = await refreshToken({
         variables: {
           refreshToken: token,
-        }
+        },
+        fetchPolicy: "network-only",
       })
       const data = refresh.data?.refreshToken
 

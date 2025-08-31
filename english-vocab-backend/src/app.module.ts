@@ -7,8 +7,10 @@ import { User } from './user/user.entity';
 import { ApolloDriver } from '@nestjs/apollo';
 import { ScrapperModule } from './scrapper/scrapper.module';
 import { WordsModule } from './words/words.module';
+import { SpeedModeModule } from './speed-mode/speed-mode.module';
 import WordStatus from './scrapper/word-status.entity';
-import Word from './words/word.entity';
+import WordEntity from './words/word.entity';
+import WordLearnStatus from './words/word-learn-status';
 
 @Module({
   imports: [
@@ -24,13 +26,14 @@ import Word from './words/word.entity';
       username: 'user',
       password: 'password',
       database: 'english_vocab_app',
-      entities: [User, WordStatus, Word],
+      entities: [User, WordStatus, WordEntity, WordLearnStatus],
       synchronize: true,
     }),
     UserModule,
     AuthModule,
     ScrapperModule,
     WordsModule,
+    SpeedModeModule,
   ],
   controllers: [],
   providers: [],

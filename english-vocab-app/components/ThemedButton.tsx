@@ -1,9 +1,13 @@
-import { Pressable, PressableProps, StyleProp, StyleSheet, Text, ViewStyle } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+} from "react-native";
 import { useThemeColors } from "@/hooks/useThemeColor";
 import { ReactNode } from "react";
 
-type ThemedButtonProps = PressableProps & {
-  style?: StyleProp<ViewStyle>;
+type ThemedButtonProps = TouchableOpacityProps & {
   children: ReactNode;
   type?: "primary" | "secondary";
 };
@@ -14,15 +18,16 @@ export default function ThemedButton({ style, children, type = "primary", ...res
   const backgroundColor = type === "primary" ? colors.accent_blue : colors.background_blue_2;
 
   return (
-    <Pressable
+    <TouchableOpacity
       style={[styles.button, { backgroundColor }, style]}
       {...rest}
+      activeOpacity={0.8}
     >
       {typeof children === "string" ? (
         <Text style={styles.buttonText}>
           {children}
         </Text>) : children}
-    </Pressable>
+    </TouchableOpacity>
   )
 }
 

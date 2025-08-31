@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
@@ -22,11 +18,13 @@ export class AuthService {
 
   async register(input: RegisterInput): Promise<boolean> {
     const conflictErrors: { name?: string; email?: string } = {};
-    if (await this.usersRepo.findOne({ where: { email: input.email } }))
+    if (await this.usersRepo.findOne({ where: { email: input.email } })) {
       conflictErrors.email = 'Email already exists';
+    }
 
-    if (await this.usersRepo.findOne({ where: { name: input.name } }))
+    if (await this.usersRepo.findOne({ where: { name: input.name } })) {
       conflictErrors.name = 'Name already exists';
+    }
 
     if (conflictErrors.email || conflictErrors.name) {
       throw new ConflictException(conflictErrors);

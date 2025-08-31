@@ -6,11 +6,7 @@ const config: CodegenConfig = {
   documents: ['../english-vocab-app/**/*.{ts,tsx}'],
   generates: {
     '../english-vocab-app/graphql/gql-generated.ts': {
-      plugins: [
-        'typescript',
-        'typescript-operations',
-        'typescript-react-apollo',
-      ],
+      plugins: ['typescript', 'typescript-operations', 'typescript-react-apollo'],
       config: {
         withHooks: true,
       },

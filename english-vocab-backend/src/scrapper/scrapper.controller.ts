@@ -1,6 +1,6 @@
 import { Controller, Param, Post } from '@nestjs/common';
 import { ScrapperService } from './scrapper.service';
-import Word from '../words/word.entity';
+import WordEntity from '../words/word.entity';
 
 @Controller('scrapper')
 export class ScrapperController {
@@ -15,9 +15,9 @@ export class ScrapperController {
 
   @Post('fetch-next/:number')
   public async fetchNext(@Param('number') number: number) {
-    const words: Word[] = [];
+    const words: WordEntity[] = [];
     for (let i = 0; i < number; i++) {
-      const fetched: Word[] | null = await this.scrapperService.fetchNextWord();
+      const fetched: WordEntity[] | null = await this.scrapperService.fetchNextWord();
 
       if (fetched) {
         words.push(...fetched);
