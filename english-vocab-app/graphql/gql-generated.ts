@@ -80,13 +80,13 @@ export type User = {
 
 export type WordEntity = {
   __typename?: 'WordEntity';
-  base_word_en: Scalars['String']['output'];
-  definition_en: Scalars['String']['output'];
-  examples: Scalars['String']['output'];
+  base_word_en?: Maybe<Scalars['String']['output']>;
+  definition_en?: Maybe<Scalars['String']['output']>;
+  examples: Array<Scalars['String']['output']>;
   id: Scalars['Float']['output'];
-  other_forms: Scalars['String']['output'];
-  tags: Scalars['String']['output'];
-  type: Scalars['String']['output'];
+  other_forms: Array<Scalars['String']['output']>;
+  tags: Array<Scalars['String']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
   word_en: Scalars['String']['output'];
   word_pl: Scalars['String']['output'];
 };
@@ -128,7 +128,7 @@ export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'Au
 export type GetNextWordsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetNextWordsQuery = { __typename?: 'Query', getNextWords: Array<{ __typename?: 'GameWord', similarEnWords: Array<string>, similarPlWords: Array<string>, word: { __typename?: 'WordEntity', id: number, definition_en: string, word_en: string, word_pl: string, examples: string, type: string, base_word_en: string, other_forms: string, tags: string }, wordLearnStatus?: { __typename?: 'WordLearnStatus', speedModeCorrectAnswers: number, speedModeWrongAnswers: number } | null }> };
+export type GetNextWordsQuery = { __typename?: 'Query', getNextWords: Array<{ __typename?: 'GameWord', similarEnWords: Array<string>, similarPlWords: Array<string>, word: { __typename?: 'WordEntity', id: number, definition_en?: string | null, word_en: string, word_pl: string, examples: Array<string>, type?: string | null, base_word_en?: string | null, other_forms: Array<string>, tags: Array<string> }, wordLearnStatus?: { __typename?: 'WordLearnStatus', speedModeCorrectAnswers: number, speedModeWrongAnswers: number } | null }> };
 
 
 export const RefreshTokenDocument = gql`

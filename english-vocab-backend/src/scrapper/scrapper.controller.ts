@@ -30,4 +30,9 @@ export class ScrapperController {
   public async scrape(@Param('word') word: string) {
     return await this.scrapperService.scrapeWord(word);
   }
+
+  @Post('update-other-forms')
+  public async save() {
+    await this.scrapperService.updateOtherFormsForAllWords();
+  }
 }

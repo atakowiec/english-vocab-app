@@ -7,13 +7,18 @@ import { evaluate, FetchResponse, openPage } from '../utils/puppeteer.util';
 import { WordsService } from '../words/words.service';
 import WordEntity from '../words/word.entity';
 import { lemmatize, LemmatizerType } from '../utils/lemmatizer.util';
+import { ConfigService } from '@nestjs/config';
+import { RelatedWordsResponse } from '../types/wordnik';
 
 @Injectable()
 export class ScrapperService {
+  readonly otherFormsCache = new Map<string, string[]>();
+
   constructor(
     @InjectRepository(WordStatus)
     private readonly wordStatusRepository: Repository<WordStatus>,
     private readonly wordsService: WordsService,
+    private readonly configService: ConfigService,
   ) {
     // empty
   }
@@ -122,9 +127,9 @@ export class ScrapperService {
           word_en: word.word ?? wordText,
           word_pl: word.translation,
           base_word_en: wordText,
-          tags: word.tags.join('\n'),
-          examples: word.examples.join('\n'),
-          other_forms: word.otherForms.join('\n'),
+          tags: word.tags,
+          examples: word.examples,
+          other_forms: word.otherForms,
           learnStatuses: [],
         }),
       );
@@ -162,5 +167,63 @@ export class ScrapperService {
   async isFetched(word: string): Promise<boolean> {
     const wordStatus = await this.getWordStatus(word);
     return !!wordStatus?.fetched;
+  }
+
+  async getOtherForms(word: string): Promise<string[]> {
+    const cached = this.otherFormsCache.get(word);
+    if (cached) {
+      console.log(`cached other forms for word: ${word}`);
+      return cached;
+    }
+
+    const API_KEY = this.configService.get('WORDNIK_API_KEY');
+
+    const response = await fetch(
+      `https://api.wordnik.com/v4/word.json/${word}/relatedWords?api_key=${API_KEY}&relationshipTypes=verb-form`,
+    );
+    if (response.status != 200) {
+      console.log(`error fetching other forms for word: ${word} - ${response.status}`);
+      return [word];
+    }
+
+    const data: RelatedWordsResponse = await response.json();
+    const result = new Set<string>();
+    result.add(word);
+
+    console.log(word, data);
+
+    for (const relationship of data) {
+      if (['variant', 'verb-form'].includes(relationship.relationshipType)) {
+        for (const w of relationship.words) {
+          result.add(w);
+        }
+      }
+    }
+
+    this.otherFormsCache.set(word, [...result]);
+
+    return [...result];
+  }
+
+  async saveOtherForms(word: WordEntity) {
+    word.other_forms = [...new Set([...word.other_forms, ...(await this.getOtherForms(word.word_en))])];
+    await this.wordsService.save(word);
+
+    console.log(`saved other forms for word: ${word.id}. ${word.word_en}`);
+  }
+
+  async updateOtherFormsForAllWords() {
+    const allWords = await this.wordsService.getAll();
+
+    const batchSize = 2;
+
+    for (let i = 0; i < allWords.length; i += batchSize) {
+      const batch = allWords.slice(i, i + batchSize);
+
+      // run 20 tasks concurrently
+      await Promise.all(batch.map((word) => this.saveOtherForms(word)));
+    }
+
+    console.log('✅ Finished updating other forms for all words');
   }
 }

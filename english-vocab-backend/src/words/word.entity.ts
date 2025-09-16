@@ -29,17 +29,18 @@ export default class WordEntity {
   @Field({ nullable: true })
   type?: string;
 
-  @Column()
-  @Field()
-  tags: string;
 
-  @Column({ length: 1023 })
-  @Field()
-  examples: string;
+  @Column("json")
+  @Field(() => [String])
+  tags: string[];
 
-  @Column()
-  @Field()
-  other_forms: string;
+  @Column("json")
+  @Field(() => [String])
+  examples: string[];
+
+  @Column("json")
+  @Field(() => [String])
+  other_forms: string[];
 
   @OneToMany(() => WordLearnStatus, (status) => status.word)
   learnStatuses: WordLearnStatus[];

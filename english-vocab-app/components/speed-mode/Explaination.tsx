@@ -53,7 +53,7 @@ export default function Explaination({ word, dummy = false }: Props) {
         <ThemedText type={"defaultSemiBold"} style={{ marginTop: 15 }}>
           Example:
         </ThemedText>
-        {word.word.examples.split("\n").map((example, i) => (
+        {word.word.examples.map((example, i) => (
           <ThemedText type={"small"} colorKey={"text_secondary"} key={`${example}-${i}`}>
             - {example}
           </ThemedText>

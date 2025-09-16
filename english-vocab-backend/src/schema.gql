@@ -9,9 +9,9 @@ type WordEntity {
   base_word_en: String
   definition_en: String
   type: String
-  tags: String!
-  examples: String!
-  other_forms: String!
+  tags: [String!]!
+  examples: [String!]!
+  other_forms: [String!]!
 }
 
 type WordLearnStatus {

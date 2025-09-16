@@ -11,6 +11,7 @@ import { SpeedModeModule } from './speed-mode/speed-mode.module';
 import WordStatus from './scrapper/word-status.entity';
 import WordEntity from './words/word.entity';
 import WordLearnStatus from './words/word-learn-status';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -28,6 +29,9 @@ import WordLearnStatus from './words/word-learn-status';
       database: 'english_vocab_app',
       entities: [User, WordStatus, WordEntity, WordLearnStatus],
       synchronize: true,
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
     UserModule,
     AuthModule,

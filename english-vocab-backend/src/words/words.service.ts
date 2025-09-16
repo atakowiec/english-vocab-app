@@ -43,4 +43,8 @@ export class WordsService {
       .limit(3)
       .getMany();
   }
+
+  async getAll() {
+    return await this.repository.find();
+  }
 }
