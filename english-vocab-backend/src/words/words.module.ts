@@ -4,10 +4,10 @@ import { WordsController } from './words.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import WordEntity from './word.entity';
 import WordStatus from '../scrapper/word-status.entity';
-import WordLearnStatus from './word-learn-status';
+import WordLearnEntry from './word-learn-status';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([WordEntity, WordStatus, WordLearnStatus])],
+  imports: [TypeOrmModule.forFeature([WordEntity, WordStatus, WordLearnEntry])],
   providers: [WordsService],
   controllers: [WordsController],
   exports: [WordsService],

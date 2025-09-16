@@ -10,7 +10,7 @@ import { User } from '../user/user.entity';
  */
 @Entity()
 @ObjectType()
-export default class WordLearnStatus {
+export default class WordLearnEntry {
   @PrimaryGeneratedColumn()
   @Field(() => Int)
   id: number;
@@ -20,7 +20,7 @@ export default class WordLearnStatus {
   @Field(() => WordEntity)
   word: WordEntity;
 
-  @ManyToOne(() => User, (user) => user.wordStatuses, { eager: true })
+  @ManyToOne(() => User, (user) => user.wordLearnEntries, { eager: true })
   @JoinColumn({ name: 'userId' })
   @Field(() => User)
   user: User;

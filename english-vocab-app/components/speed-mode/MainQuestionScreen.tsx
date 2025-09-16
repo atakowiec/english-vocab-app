@@ -13,8 +13,8 @@ export default function MainQuestionScreen() {
 
   function isNewMeaning() {
     return currentWord &&
-      (currentWord.wordLearnStatus?.speedModeCorrectAnswers ?? 0)
-      + (currentWord.wordLearnStatus?.speedModeWrongAnswers ?? 0) === 0
+      (currentWord.wordLearnEntry?.speedModeCorrectAnswers ?? 0)
+      + (currentWord.wordLearnEntry?.speedModeWrongAnswers ?? 0) === 0
   }
 
   return (

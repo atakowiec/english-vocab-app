@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
@@ -10,6 +10,8 @@ import { AuthPayload } from './auth-payload.dto';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     @InjectRepository(User) private usersRepo: Repository<User>,
     private readonly userService: UserService,
@@ -17,6 +19,7 @@ export class AuthService {
   ) {}
 
   async register(input: RegisterInput): Promise<boolean> {
+    this.logger.log(`Register attempt: email=${input.email}, name=${input.name}`);
     const conflictErrors: { name?: string; email?: string } = {};
     if (await this.usersRepo.findOne({ where: { email: input.email } })) {
       conflictErrors.email = 'Email already exists';
@@ -27,21 +30,24 @@ export class AuthService {
     }
 
     if (conflictErrors.email || conflictErrors.name) {
+      this.logger.warn(`Registration conflict for email=${input.email}, name=${input.name}: ${JSON.stringify(conflictErrors)}`);
       throw new ConflictException(conflictErrors);
     }
 
-    console.log('Registered user:', input.email, input.name, input.password);
-
     const hashed = await bcrypt.hash(input.password, 10);
     await this.usersRepo.save({ ...input, password: hashed });
+    this.logger.log(`User registered: email=${input.email}, name=${input.name}`);
     return true;
   }
 
   async validateUser(email: string, password: string): Promise<User> {
+    this.logger.log(`Validating user with email=${email}`);
     const user = await this.usersRepo.findOne({ where: { email } });
     if (user && (await bcrypt.compare(password, user.password))) {
+      this.logger.log(`User validated: id=${user.id}, email=${email}`);
       return user;
     }
+    this.logger.warn(`Invalid credentials for email=${email}`);
     throw new UnauthorizedException({
       general: 'Invalid credentials',
     });
@@ -49,6 +55,7 @@ export class AuthService {
 
   login(user: User): AuthPayload {
     const payload = { sub: user.id, email: user.email };
+    this.logger.log(`Issuing tokens for user id=${user.id}`);
 
     return {
       accessToken: this.jwtService.sign(payload, {
@@ -62,11 +69,14 @@ export class AuthService {
   }
 
   async varifyRefreshToken(refreshToken: string): Promise<AuthPayload> {
+    this.logger.log(`Verifying refresh token`);
     if (!refreshToken) {
+      this.logger.warn('Refresh token is missing');
       throw new UnauthorizedException('Refresh token is missing');
     }
 
     if (!this.jwtService.verify(refreshToken)) {
+      this.logger.warn('Invalid refresh token');
       throw new UnauthorizedException('Invalid refresh token');
     }
 
@@ -74,6 +84,7 @@ export class AuthService {
 
     const user = await this.userService.findById(payload.sub);
     if (!user) {
+      this.logger.warn(`Refresh token user not found: id=${payload.sub}`);
       throw new UnauthorizedException('User not found');
     }
 

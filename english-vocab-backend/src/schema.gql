@@ -14,7 +14,7 @@ type WordEntity {
   other_forms: [String!]!
 }
 
-type WordLearnStatus {
+type WordLearnEntry {
   id: Int!
   word: WordEntity!
   user: User!
@@ -37,7 +37,7 @@ type AuthPayload {
 
 type GameWord {
   word: WordEntity!
-  wordLearnStatus: WordLearnStatus
+  wordLearnEntry: WordLearnEntry
   similarEnWords: [String!]!
   similarPlWords: [String!]!
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import WordStatus from './word-status.entity';
 import { In, Repository } from 'typeorm';
@@ -12,6 +12,7 @@ import { RelatedWordsResponse } from '../types/wordnik';
 
 @Injectable()
 export class ScrapperService {
+  private readonly logger = new Logger(ScrapperService.name);
   readonly otherFormsCache = new Map<string, string[]>();
 
   constructor(
@@ -62,8 +63,8 @@ export class ScrapperService {
 
     await this.wordStatusRepository.save(newWords.map((word) => ({ word, fetched: false })));
 
-    console.log(`saved ${newWords.length} words`);
-    console.log(newWords);
+    this.logger.log(`Saved ${newWords.length} new words`);
+    this.logger.debug(`New words: ${JSON.stringify(newWords)}`);
   }
 
   async loadDefaultWords() {
@@ -74,8 +75,7 @@ export class ScrapperService {
 
   async fetchNextWord(): Promise<WordEntity[] | null> {
     let wordText = await this.getNextWord();
-    console.log(`@------------------------------------------------------@`);
-    console.log('FETCHING WORD:', wordText);
+    this.logger.log(`Fetching next word: ${wordText}`);
 
     if (!wordText) return null;
 
@@ -83,7 +83,7 @@ export class ScrapperService {
     await this.saveWords(fetchResponse.toFetch);
 
     if (await this.isFetched(fetchResponse.urlWord)) {
-      console.log(`url word already fetched: ${fetchResponse.urlWord}`);
+      this.logger.debug(`URL word already fetched: ${fetchResponse.urlWord}`);
       await this.updateWordStatus(wordText, true);
       return this.fetchNextWord();
     }
@@ -139,9 +139,9 @@ export class ScrapperService {
     for (const word of toUpdateStatus) {
       await this.updateWordStatus(word, true);
     }
-    console.log(`updated status for: `, toUpdateStatus);
+    this.logger.debug(`Updated status for: ${JSON.stringify([...toUpdateStatus])}`);
 
-    console.log(infos);
+    this.logger.debug(`Infos: ${JSON.stringify(infos)}`);
 
     return saved;
   }
@@ -172,7 +172,7 @@ export class ScrapperService {
   async getOtherForms(word: string): Promise<string[]> {
     const cached = this.otherFormsCache.get(word);
     if (cached) {
-      console.log(`cached other forms for word: ${word}`);
+      this.logger.debug(`Cached other forms for word: ${word}`);
       return cached;
     }
 
@@ -182,7 +182,7 @@ export class ScrapperService {
       `https://api.wordnik.com/v4/word.json/${word}/relatedWords?api_key=${API_KEY}&relationshipTypes=verb-form`,
     );
     if (response.status != 200) {
-      console.log(`error fetching other forms for word: ${word} - ${response.status}`);
+      this.logger.warn(`Error fetching other forms for word: ${word} - status ${response.status}`);
       return [word];
     }
 
@@ -190,7 +190,7 @@ export class ScrapperService {
     const result = new Set<string>();
     result.add(word);
 
-    console.log(word, data);
+    this.logger.debug(`Wordnik relatedWords for ${word}: ${JSON.stringify(data)}`);
 
     for (const relationship of data) {
       if (['variant', 'verb-form'].includes(relationship.relationshipType)) {
@@ -206,10 +206,10 @@ export class ScrapperService {
   }
 
   async saveOtherForms(word: WordEntity) {
-    word.other_forms = [...new Set([...word.other_forms, ...(await this.getOtherForms(word.word_en))])];
+    word.other_forms = [...new Set([...(word.other_forms ?? []), ...(await this.getOtherForms(word.word_en))])];
     await this.wordsService.save(word);
 
-    console.log(`saved other forms for word: ${word.id}. ${word.word_en}`);
+    this.logger.log(`Saved other forms for word: ${word.id}. ${word.word_en}`);
   }
 
   async updateOtherFormsForAllWords() {
@@ -224,6 +224,6 @@ export class ScrapperService {
       await Promise.all(batch.map((word) => this.saveOtherForms(word)));
     }
 
-    console.log('✅ Finished updating other forms for all words');
+    this.logger.log('Finished updating other forms for all words');
   }
 }

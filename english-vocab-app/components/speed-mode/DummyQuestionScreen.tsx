@@ -53,8 +53,8 @@ export default function DummyQuestionScreen() {
 
   function isNewMeaning() {
     return prevWord &&
-      (prevWord.wordLearnStatus?.speedModeCorrectAnswers ?? 0)
-      + (prevWord.wordLearnStatus?.speedModeWrongAnswers ?? 0) === 0
+      (prevWord.wordLearnEntry?.speedModeCorrectAnswers ?? 0)
+      + (prevWord.wordLearnEntry?.speedModeWrongAnswers ?? 0) === 0
   }
 
   const rotateZ = rotateZValue.interpolate({

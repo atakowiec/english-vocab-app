@@ -10,7 +10,7 @@ import { WordsModule } from './words/words.module';
 import { SpeedModeModule } from './speed-mode/speed-mode.module';
 import WordStatus from './scrapper/word-status.entity';
 import WordEntity from './words/word.entity';
-import WordLearnStatus from './words/word-learn-status';
+import WordLearnEntry from './words/word-learn-status';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -27,7 +27,7 @@ import { ConfigModule } from '@nestjs/config';
       username: 'user',
       password: 'password',
       database: 'english_vocab_app',
-      entities: [User, WordStatus, WordEntity, WordLearnStatus],
+      entities: [User, WordStatus, WordEntity, WordLearnEntry],
       synchronize: true,
     }),
     ConfigModule.forRoot({
