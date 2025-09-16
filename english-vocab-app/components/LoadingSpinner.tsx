@@ -22,7 +22,7 @@ export default function LoadingSpinner({ size = 40 }: { size?: number }) {
 
   return (
     <Animated.View style={{ transform: [{ rotate }] }}>
-      <AntDesign name="loading1" size={size} color="white"/>
+      <AntDesign name="loading" size={size} color="white"/>
     </Animated.View>
   )
 }
