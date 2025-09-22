@@ -1,6 +1,11 @@
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { usePreferences } from "@/context/PreferencesContext";
-import { GetNextWordsQuery, useGetNextWordsLazyQuery } from "@/graphql/gql-generated";
+import {
+  GetNextWordsQuery,
+  GivenAnswerInput,
+  useGetNextWordsLazyQuery,
+  useSaveAnswersMutation
+} from "@/graphql/gql-generated";
 
 type GameStage = "counting" | "answering" | "show_answer" | "explaination_fade_in" | "swipe_next"
 type ProgressData = { target: number, duration: number }
@@ -32,11 +37,13 @@ export const SpeedModeProvider = ({ children }: { children: ReactNode }) => {
   const difficulty = getPreference("speed-test-difficulty", "medium");
   const [stage, setStage] = useState<GameStage>("counting")
   const [progressData, setProgressData] = useState<ProgressData>({ target: 0, duration: 5000 })
+  const savedAnswersRef = useRef<GivenAnswerInput[]>([])
 
   const [wordsQueue, setWordsQueue] = useState<WordType[]>([])
   const [fetchWordsQuery] = useGetNextWordsLazyQuery({
     fetchPolicy: "network-only",
   })
+  const [saveAnswers] = useSaveAnswersMutation({ fetchPolicy: "network-only" })
 
   const answerTime = {
     "hard": 3,
@@ -66,6 +73,10 @@ export const SpeedModeProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     fetchNextWords()
+
+    return () => {
+      sendAnswers()
+    }
   }, [])
 
   const fetchNextWords = () => {
@@ -114,7 +125,31 @@ export const SpeedModeProvider = ({ children }: { children: ReactNode }) => {
         word.selectedAnswer = answer
       }
       newWords[0] = word
+
+      savedAnswersRef.current.push({
+        word_id: word.word.id,
+        correct: word.selectedAnswer === word.correctAnswer,
+        date: new Date(),
+        learnMode: "SPEED_MODE"
+      })
+
       return newWords
+    })
+
+    if (savedAnswersRef.current.length < 10) {
+      return
+    }
+    sendAnswers()
+  }
+
+  const sendAnswers = async () => {
+    const input = savedAnswersRef.current;
+    savedAnswersRef.current = [];
+
+    await saveAnswers({
+      variables: {
+        input
+      }
     })
   }
 

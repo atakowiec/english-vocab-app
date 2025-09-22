@@ -1,9 +1,9 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { Animated, useAnimatedValue } from "react-native";
-import { useEffect } from "react";
+import { Animated } from "react-native";
+import { useEffect, useRef } from "react";
 
 export default function LoadingSpinner({ size = 40 }: { size?: number }) {
-  const spinValue = useAnimatedValue(0)
+  const spinValue = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
     Animated.loop(

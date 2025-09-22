@@ -19,7 +19,7 @@ export class SpeedModeService {
   }
 
   async getNextWords(user: User): Promise<GameWord[]> {
-    this.logger.log(`Generating next words for user ${user.id}`);
+    this.logger.log(`Generating next words for user ${user.id}`); // todo fucked
     const randomWords = await this.wordsRepository
       .createQueryBuilder('word')
       .leftJoinAndSelect('word.learnStatuses', 'learnStatus', 'learnStatus.userId = :userId', { userId: user.id })
@@ -41,7 +41,11 @@ export class SpeedModeService {
         word,
         similarEnWords: similarWords.map((w) => w.word_en),
         similarPlWords: similarPlWords.map((w) => w.word_pl),
-        wordLearnEntry: word.learnStatuses?.[0],
+        wordLearnStatus: {
+          allAnsweres: 0,
+          correctAnswers: 0,
+          incorrectAnswers: 0,
+        },
       });
     }
 

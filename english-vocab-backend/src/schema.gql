@@ -14,30 +14,41 @@ type WordEntity {
   other_forms: [String!]!
 }
 
-type WordLearnEntry {
-  id: Int!
-  word: WordEntity!
-  user: User!
-  learned: Boolean!
-  speedModeCorrectAnswers: Int!
-  speedModeWrongAnswers: Int!
-}
-
 type User {
   id: Int!
   email: String!
   name: String!
 }
 
+type ModeProgressDto {
+  streak: Float!
+  correctAnswers: Float!
+  allAnswers: Float!
+  allWords: Float!
+}
+
+type UserDataDto {
+  streak: Float!
+  exp: Float!
+  speedModeProgress: ModeProgressDto!
+}
+
 type AuthPayload {
   accessToken: String!
   refreshToken: String!
   user: User!
+  userData: UserDataDto!
+}
+
+type WordLearnStatusDto {
+  allAnsweres: Float!
+  correctAnswers: Float!
+  incorrectAnswers: Float!
 }
 
 type GameWord {
   word: WordEntity!
-  wordLearnEntry: WordLearnEntry
+  wordLearnStatus: WordLearnStatusDto!
   similarEnWords: [String!]!
   similarPlWords: [String!]!
 }
@@ -48,10 +59,23 @@ type Query {
 }
 
 type Mutation {
+  saveAnswers(input: [GivenAnswerInput!]!): Boolean!
   register(input: RegisterInput!): Boolean!
   login(input: LoginInput!): AuthPayload!
   refreshToken(refreshToken: String!): AuthPayload!
 }
+
+input GivenAnswerInput {
+  word_id: Float!
+  correct: Boolean!
+  date: DateTime!
+  learnMode: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 input RegisterInput {
   email: String!

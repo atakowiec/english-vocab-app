@@ -16,9 +16,10 @@ export const GET_NEXT_WORDS_FOR_SPEED_TEST_QUERY = gql`
             }
             similarEnWords
             similarPlWords
-            wordLearnEntry {
-                speedModeCorrectAnswers
-                speedModeWrongAnswers
+            wordLearnStatus {
+                allAnsweres
+                correctAnswers
+                incorrectAnswers
             }
         }
     }

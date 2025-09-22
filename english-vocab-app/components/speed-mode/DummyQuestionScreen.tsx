@@ -51,12 +51,6 @@ export default function DummyQuestionScreen() {
   if (stage !== "swipe_next")
     return null
 
-  function isNewMeaning() {
-    return prevWord &&
-      (prevWord.wordLearnEntry?.speedModeCorrectAnswers ?? 0)
-      + (prevWord.wordLearnEntry?.speedModeWrongAnswers ?? 0) === 0
-  }
-
   const rotateZ = rotateZValue.interpolate({
     inputRange: [-1, 0],
     outputRange: ["45deg", "0deg"]
@@ -70,7 +64,7 @@ export default function DummyQuestionScreen() {
     }]}>
       <View style={styles.optionsBox}>
         {
-          isNewMeaning() &&
+          !currentWord?.wordLearnStatus.allAnsweres &&
             <View style={[styles.optionButton, styles.newMeaning, {
               backgroundColor: colors.background_blue_3,
               borderColor: colors.accent_blue

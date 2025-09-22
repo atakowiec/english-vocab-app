@@ -16,7 +16,7 @@ export const DifficultySelector = ({ difficulty, setDifficulty }: Props) => {
   const difficultyButtons: { name: Difficulty, description: string }[] = [
     {
       name: "easy",
-      description: "100s for answer",
+      description: "10s for answer",
     },
     {
       name: "medium",

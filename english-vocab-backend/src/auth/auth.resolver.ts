@@ -22,7 +22,7 @@ export class AuthResolver {
   @Mutation(() => AuthPayload)
   async login(@Args('input') input: LoginInput): Promise<AuthPayload> {
     const user = await this.authService.validateUser(input.email, input.password);
-    return this.authService.login(user);
+    return await this.authService.login(user);
   }
 
   @Mutation(() => AuthPayload)

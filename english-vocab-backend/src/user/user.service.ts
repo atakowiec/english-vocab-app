@@ -2,12 +2,18 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import UserDataDto from './user-data.dto';
+import { LearnStatusService } from '../learn-status/learn-status.service';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
 
-  constructor(@InjectRepository(User) private readonly repository: Repository<User>) {
+  constructor(
+    @InjectRepository(User)
+    private readonly repository: Repository<User>,
+    private readonly learnStatusService: LearnStatusService,
+  ) {
     // empty
   }
 
@@ -20,5 +26,13 @@ export class UserService {
       this.logger.debug(`Found user id=${user.id}`);
     }
     return user;
+  }
+
+  async getUserData(user: User): Promise<UserDataDto> {
+    return {
+      exp: user.exp,
+      streak: 0, // todo
+      speedModeProgress: await this.learnStatusService.getUserProgress("SPEED_MODE", user),
+    };
   }
 }

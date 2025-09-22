@@ -15,6 +15,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
+  DateTime: { input: any; output: any; }
 };
 
 export type AuthPayload = {
@@ -22,6 +24,7 @@ export type AuthPayload = {
   accessToken: Scalars['String']['output'];
   refreshToken: Scalars['String']['output'];
   user: User;
+  userData: UserDataDto;
 };
 
 export type GameWord = {
@@ -29,7 +32,14 @@ export type GameWord = {
   similarEnWords: Array<Scalars['String']['output']>;
   similarPlWords: Array<Scalars['String']['output']>;
   word: WordEntity;
-  wordLearnEntry?: Maybe<WordLearnEntry>;
+  wordLearnStatus: WordLearnStatusDto;
+};
+
+export type GivenAnswerInput = {
+  correct: Scalars['Boolean']['input'];
+  date: Scalars['DateTime']['input'];
+  learnMode: Scalars['String']['input'];
+  word_id: Scalars['Float']['input'];
 };
 
 export type LoginInput = {
@@ -37,11 +47,20 @@ export type LoginInput = {
   password: Scalars['String']['input'];
 };
 
+export type ModeProgressDto = {
+  __typename?: 'ModeProgressDto';
+  allAnswers: Scalars['Float']['output'];
+  allWords: Scalars['Float']['output'];
+  correctAnswers: Scalars['Float']['output'];
+  streak: Scalars['Float']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   login: AuthPayload;
   refreshToken: AuthPayload;
   register: Scalars['Boolean']['output'];
+  saveAnswers: Scalars['Boolean']['output'];
 };
 
 
@@ -57,6 +76,11 @@ export type MutationRefreshTokenArgs = {
 
 export type MutationRegisterArgs = {
   input: RegisterInput;
+};
+
+
+export type MutationSaveAnswersArgs = {
+  input: Array<GivenAnswerInput>;
 };
 
 export type Query = {
@@ -78,6 +102,13 @@ export type User = {
   name: Scalars['String']['output'];
 };
 
+export type UserDataDto = {
+  __typename?: 'UserDataDto';
+  exp: Scalars['Float']['output'];
+  speedModeProgress: ModeProgressDto;
+  streak: Scalars['Float']['output'];
+};
+
 export type WordEntity = {
   __typename?: 'WordEntity';
   base_word_en?: Maybe<Scalars['String']['output']>;
@@ -91,14 +122,11 @@ export type WordEntity = {
   word_pl: Scalars['String']['output'];
 };
 
-export type WordLearnEntry = {
-  __typename?: 'WordLearnEntry';
-  id: Scalars['Int']['output'];
-  learned: Scalars['Boolean']['output'];
-  speedModeCorrectAnswers: Scalars['Int']['output'];
-  speedModeWrongAnswers: Scalars['Int']['output'];
-  user: User;
-  word: WordEntity;
+export type WordLearnStatusDto = {
+  __typename?: 'WordLearnStatusDto';
+  allAnsweres: Scalars['Float']['output'];
+  correctAnswers: Scalars['Float']['output'];
+  incorrectAnswers: Scalars['Float']['output'];
 };
 
 export type RefreshTokenMutationVariables = Exact<{
@@ -128,7 +156,14 @@ export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'Au
 export type GetNextWordsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetNextWordsQuery = { __typename?: 'Query', getNextWords: Array<{ __typename?: 'GameWord', similarEnWords: Array<string>, similarPlWords: Array<string>, word: { __typename?: 'WordEntity', id: number, definition_en?: string | null, word_en: string, word_pl: string, examples: Array<string>, type?: string | null, base_word_en?: string | null, other_forms: Array<string>, tags: Array<string> }, wordLearnEntry?: { __typename?: 'WordLearnEntry', speedModeCorrectAnswers: number, speedModeWrongAnswers: number } | null }> };
+export type GetNextWordsQuery = { __typename?: 'Query', getNextWords: Array<{ __typename?: 'GameWord', similarEnWords: Array<string>, similarPlWords: Array<string>, word: { __typename?: 'WordEntity', id: number, definition_en?: string | null, word_en: string, word_pl: string, examples: Array<string>, type?: string | null, base_word_en?: string | null, other_forms: Array<string>, tags: Array<string> }, wordLearnStatus: { __typename?: 'WordLearnStatusDto', allAnsweres: number, correctAnswers: number, incorrectAnswers: number } }> };
+
+export type SaveAnswersMutationVariables = Exact<{
+  input: Array<GivenAnswerInput> | GivenAnswerInput;
+}>;
+
+
+export type SaveAnswersMutation = { __typename?: 'Mutation', saveAnswers: boolean };
 
 
 export const RefreshTokenDocument = gql`
@@ -259,9 +294,10 @@ export const GetNextWordsDocument = gql`
     }
     similarEnWords
     similarPlWords
-    wordLearnEntry {
-      speedModeCorrectAnswers
-      speedModeWrongAnswers
+    wordLearnStatus {
+      allAnsweres
+      correctAnswers
+      incorrectAnswers
     }
   }
 }
@@ -298,3 +334,34 @@ export type GetNextWordsQueryHookResult = ReturnType<typeof useGetNextWordsQuery
 export type GetNextWordsLazyQueryHookResult = ReturnType<typeof useGetNextWordsLazyQuery>;
 export type GetNextWordsSuspenseQueryHookResult = ReturnType<typeof useGetNextWordsSuspenseQuery>;
 export type GetNextWordsQueryResult = Apollo.QueryResult<GetNextWordsQuery, GetNextWordsQueryVariables>;
+export const SaveAnswersDocument = gql`
+    mutation saveAnswers($input: [GivenAnswerInput!]!) {
+  saveAnswers(input: $input)
+}
+    `;
+export type SaveAnswersMutationFn = Apollo.MutationFunction<SaveAnswersMutation, SaveAnswersMutationVariables>;
+
+/**
+ * __useSaveAnswersMutation__
+ *
+ * To run a mutation, you first call `useSaveAnswersMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSaveAnswersMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [saveAnswersMutation, { data, loading, error }] = useSaveAnswersMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useSaveAnswersMutation(baseOptions?: Apollo.MutationHookOptions<SaveAnswersMutation, SaveAnswersMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SaveAnswersMutation, SaveAnswersMutationVariables>(SaveAnswersDocument, options);
+      }
+export type SaveAnswersMutationHookResult = ReturnType<typeof useSaveAnswersMutation>;
+export type SaveAnswersMutationResult = Apollo.MutationResult<SaveAnswersMutation>;
+export type SaveAnswersMutationOptions = Apollo.BaseMutationOptions<SaveAnswersMutation, SaveAnswersMutationVariables>;

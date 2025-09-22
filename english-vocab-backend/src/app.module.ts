@@ -10,8 +10,9 @@ import { WordsModule } from './words/words.module';
 import { SpeedModeModule } from './speed-mode/speed-mode.module';
 import WordStatus from './scrapper/word-status.entity';
 import WordEntity from './words/word.entity';
-import WordLearnEntry from './words/word-learn-status';
+import WordLearnEntry from './learn-status/word-learn-entry.entity';
 import { ConfigModule } from '@nestjs/config';
+import { LearnStatusModule } from './learn-status/learn-status.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ConfigModule } from '@nestjs/config';
     ScrapperModule,
     WordsModule,
     SpeedModeModule,
+    LearnStatusModule,
   ],
   controllers: [],
   providers: [],

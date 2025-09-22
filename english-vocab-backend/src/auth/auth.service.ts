@@ -53,7 +53,7 @@ export class AuthService {
     });
   }
 
-  login(user: User): AuthPayload {
+  async login(user: User): Promise<AuthPayload> {
     const payload = { sub: user.id, email: user.email };
     this.logger.log(`Issuing tokens for user id=${user.id}`);
 
@@ -65,6 +65,7 @@ export class AuthService {
         expiresIn: '28d',
       }),
       user,
+      userData: await this.userService.getUserData(user)
     };
   }
 
@@ -88,6 +89,6 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    return this.login(user);
+    return await this.login(user);
   }
 }

@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ObjectType } from '@nestjs/graphql';
-import WordLearnEntry from './word-learn-status';
+import WordLearnEntry from '../learn-status/word-learn-entry.entity';
 
 @Entity({ name: 'word' })
 @ObjectType()

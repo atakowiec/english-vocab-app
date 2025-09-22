@@ -11,12 +11,6 @@ export default function MainQuestionScreen() {
   const colors = useThemeColors()
   const { currentWord } = useSpeedModeData()
 
-  function isNewMeaning() {
-    return currentWord &&
-      (currentWord.wordLearnEntry?.speedModeCorrectAnswers ?? 0)
-      + (currentWord.wordLearnEntry?.speedModeWrongAnswers ?? 0) === 0
-  }
-
   return (
     <View style={[styles.box, {
       backgroundColor: colors.background_blue_1,
@@ -24,7 +18,7 @@ export default function MainQuestionScreen() {
     }]}>
       <View style={styles.optionsBox}>
         {
-          isNewMeaning() &&
+          !currentWord?.wordLearnStatus.allAnsweres &&
             <View style={[styles.optionButton, styles.newMeaning, {
               backgroundColor: colors.background_blue_3,
               borderColor: colors.accent_blue

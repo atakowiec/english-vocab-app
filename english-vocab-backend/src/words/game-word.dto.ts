@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import WordEntity from './word.entity';
-import WordLearnEntry from './word-learn-status';
+import WordLearnStatusDto from '../learn-status/word-learn-status.dto';
 
 /**
  * A GraphQL object type representing a game word, including all the data needed for the frontend
@@ -11,8 +11,8 @@ export default class GameWord {
   @Field(() => WordEntity)
   word: WordEntity;
 
-  @Field(() => WordLearnEntry, { nullable: true })
-  wordLearnEntry?: WordLearnEntry;
+  @Field(() => WordLearnStatusDto)
+  wordLearnStatus: WordLearnStatusDto;
 
   @Field(() => [String])
   similarEnWords: string[];
