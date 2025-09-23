@@ -13,6 +13,8 @@ import { View } from "react-native";
 import { useThemeColors } from "@/hooks/useThemeColor";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setContext } from "@apollo/client/link/context";
+import Toast from "react-native-toast-message";
+import { toastConfig } from "@/constants/toastConfig";
 
 const httpLink = createHttpLink({
   uri: 'http://192.168.1.11:3000/graphql',
@@ -62,6 +64,7 @@ export default function RootLayout() {
                 </Stack>
                 <StatusBar style="auto"/>
               </View>
+              <Toast config={toastConfig} autoHide={true} visibilityTime={5000}/>
             </ThemeProvider>
           </SafeAreaProvider>
         </AuthContextProvider>
