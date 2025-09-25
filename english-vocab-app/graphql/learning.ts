@@ -1,5 +1,12 @@
 import { gql } from "graphql-tag";
 
+export const SAVE_ANSWERS_MUTATOR = gql`
+    mutation saveAnswers($input: [GivenAnswerInput!]!) {
+        saveAnswers(input: $input)
+    }
+`;
+
+
 export const GET_NEXT_WORDS_FOR_SPEED_TEST_QUERY = gql`
     query getNextWords {
         getNextWords {

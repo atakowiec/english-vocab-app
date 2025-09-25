@@ -47,4 +47,20 @@ export class WordsService {
   async getAll() {
     return await this.repository.find();
   }
+
+  async getWordOfTheDay() {
+    const dayOfTheCentury = Math.floor(Date.now() / 86400000);
+
+    const word = await this.repository
+      .createQueryBuilder('word')
+      .orderBy('MOD(word.id, :dayOfTheCentury)', 'DESC')
+      .setParameter('dayOfTheCentury', dayOfTheCentury)
+      .getOne();
+
+    if (!word) {
+      throw new Error('No words in the database');
+    }
+
+    return word;
+  }
 }

@@ -22,7 +22,6 @@ export class LearnStatusService {
     return {
       streak: this.getStreak(learnMode, user),
       allAnswers: 0, // todo
-      allWords: 0, // todo
       correctAnswers: 0, // todo
     };
   }

@@ -1,7 +1,7 @@
 import { gql } from "graphql-tag";
 
-export const REFRESH_TOKEN_MUTATION = gql`
-    mutation RefreshToken($refreshToken: String!) {
+export const REFRESH_TOKEN_QUERY = gql`
+    query RefreshToken($refreshToken: String!) {
         refreshToken(refreshToken: $refreshToken) {
             accessToken
             refreshToken
@@ -30,6 +30,15 @@ export const LOGIN_MUTATION = gql`
             }
             accessToken
             refreshToken
+            userData {
+                exp
+                speedModeProgress {
+                    allAnswers
+                    streak
+                    correctAnswers
+                }
+                streak
+            }
         }
     }
 `

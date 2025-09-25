@@ -10,7 +10,4 @@ export default class ModeProgressDto {
 
   @Field()
   allAnswers: number;
-
-  @Field()
-  allWords: number;
 }

@@ -24,7 +24,6 @@ type ModeProgressDto {
   streak: Float!
   correctAnswers: Float!
   allAnswers: Float!
-  allWords: Float!
 }
 
 type UserDataDto {
@@ -55,6 +54,8 @@ type GameWord {
 
 type Query {
   hello: String!
+  refreshToken(refreshToken: String!): AuthPayload!
+  wordOfTheDay: WordEntity!
   getNextWords: [GameWord!]!
 }
 
@@ -62,7 +63,6 @@ type Mutation {
   saveAnswers(input: [GivenAnswerInput!]!): Boolean!
   register(input: RegisterInput!): Boolean!
   login(input: LoginInput!): AuthPayload!
-  refreshToken(refreshToken: String!): AuthPayload!
 }
 
 input GivenAnswerInput {

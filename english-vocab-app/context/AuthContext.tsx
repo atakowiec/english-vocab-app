@@ -4,8 +4,7 @@ import { useRouter } from "expo-router";
 import {
   AuthPayload,
   useLoginMutation,
-  User,
-  useRefreshTokenMutation,
+  User, useRefreshTokenLazyQuery,
   useRegisterMutation
 } from "@/graphql/gql-generated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,12 +19,13 @@ type AuthContextPayload = {
 
 const AuthContext = createContext<AuthContextPayload | null>(null);
 
-
 export function AuthContextProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(null)
-  const [refreshToken] = useRefreshTokenMutation()
+  const [refreshToken] = useRefreshTokenLazyQuery({
+    fetchPolicy: "cache-and-network"
+  })
   const [register] = useRegisterMutation()
   const [login] = useLoginMutation()
 
@@ -90,7 +90,7 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
       }
     })
 
-    const data = response.data?.login
+    const data: AuthPayload | undefined = response.data?.login
 
     if (!data?.user) {
       return
@@ -115,8 +115,11 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
     return !!response.data
   }
 
-  function signOut() {
-
+  async function signOut() {
+    await removeToken()
+    setAccessToken(null)
+    setUser(null)
+    router.replace("/(auth)/login")
   }
 
   return (

@@ -25,7 +25,7 @@ export class AuthResolver {
     return await this.authService.login(user);
   }
 
-  @Mutation(() => AuthPayload)
+  @Query(() => AuthPayload)
   async refreshToken(@Args('refreshToken') refreshToken: string): Promise<AuthPayload> {
     return this.authService.varifyRefreshToken(refreshToken);
   }

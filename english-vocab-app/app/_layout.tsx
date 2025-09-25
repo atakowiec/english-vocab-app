@@ -1,51 +1,35 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache } from "@apollo/client";
+import { ApolloClient, ApolloProvider } from "@apollo/client";
 import { AuthContextProvider } from "@/context/AuthContext";
-import { PreferencesProvider } from "@/context/PreferencesContext";
 import { View } from "react-native";
 import { useThemeColors } from "@/hooks/useThemeColor";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { setContext } from "@apollo/client/link/context";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/constants/toastConfig";
-
-const httpLink = createHttpLink({
-  uri: 'http://192.168.1.11:3000/graphql',
-});
-
-const authLink = setContext(async (_, { headers }) => {
-  const token = await AsyncStorage.getItem('access_token');
-
-  return {
-    headers: {
-      ...headers,
-      Authorization: token ? `Bearer ${token}` : '',
-    },
-  };
-});
-
-const client = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache()
-});
+import { PreferencesProvider } from "@/context/PreferencesContext";
+import { useEffect, useState } from "react";
+import createApolloClient from "@/utils/createApolloClient";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme()
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const [client, setClient] = useState<ApolloClient<any> | null>(null)
   const colors = useThemeColors()
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
+  useEffect(() => {
+    async function init() {
+      setClient(await createApolloClient())
+    }
+
+    init()
+  }, []);
+
+  if (!client) {
+    return null
   }
 
   return (

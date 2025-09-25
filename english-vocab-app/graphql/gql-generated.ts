@@ -50,7 +50,6 @@ export type LoginInput = {
 export type ModeProgressDto = {
   __typename?: 'ModeProgressDto';
   allAnswers: Scalars['Float']['output'];
-  allWords: Scalars['Float']['output'];
   correctAnswers: Scalars['Float']['output'];
   streak: Scalars['Float']['output'];
 };
@@ -58,7 +57,6 @@ export type ModeProgressDto = {
 export type Mutation = {
   __typename?: 'Mutation';
   login: AuthPayload;
-  refreshToken: AuthPayload;
   register: Scalars['Boolean']['output'];
   saveAnswers: Scalars['Boolean']['output'];
 };
@@ -66,11 +64,6 @@ export type Mutation = {
 
 export type MutationLoginArgs = {
   input: LoginInput;
-};
-
-
-export type MutationRefreshTokenArgs = {
-  refreshToken: Scalars['String']['input'];
 };
 
 
@@ -87,6 +80,13 @@ export type Query = {
   __typename?: 'Query';
   getNextWords: Array<GameWord>;
   hello: Scalars['String']['output'];
+  refreshToken: AuthPayload;
+  wordOfTheDay: WordEntity;
+};
+
+
+export type QueryRefreshTokenArgs = {
+  refreshToken: Scalars['String']['input'];
 };
 
 export type RegisterInput = {
@@ -129,12 +129,12 @@ export type WordLearnStatusDto = {
   incorrectAnswers: Scalars['Float']['output'];
 };
 
-export type RefreshTokenMutationVariables = Exact<{
+export type RefreshTokenQueryVariables = Exact<{
   refreshToken: Scalars['String']['input'];
 }>;
 
 
-export type RefreshTokenMutation = { __typename?: 'Mutation', refreshToken: { __typename?: 'AuthPayload', accessToken: string, refreshToken: string, user: { __typename?: 'User', id: number, name: string, email: string } } };
+export type RefreshTokenQuery = { __typename?: 'Query', refreshToken: { __typename?: 'AuthPayload', accessToken: string, refreshToken: string, user: { __typename?: 'User', id: number, name: string, email: string } } };
 
 export type RegisterMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -151,12 +151,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', accessToken: string, refreshToken: string, user: { __typename?: 'User', email: string, name: string, id: number } } };
-
-export type GetNextWordsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetNextWordsQuery = { __typename?: 'Query', getNextWords: Array<{ __typename?: 'GameWord', similarEnWords: Array<string>, similarPlWords: Array<string>, word: { __typename?: 'WordEntity', id: number, definition_en?: string | null, word_en: string, word_pl: string, examples: Array<string>, type?: string | null, base_word_en?: string | null, other_forms: Array<string>, tags: Array<string> }, wordLearnStatus: { __typename?: 'WordLearnStatusDto', allAnsweres: number, correctAnswers: number, incorrectAnswers: number } }> };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', accessToken: string, refreshToken: string, user: { __typename?: 'User', email: string, name: string, id: number }, userData: { __typename?: 'UserDataDto', exp: number, streak: number, speedModeProgress: { __typename?: 'ModeProgressDto', allAnswers: number, streak: number, correctAnswers: number } } } };
 
 export type SaveAnswersMutationVariables = Exact<{
   input: Array<GivenAnswerInput> | GivenAnswerInput;
@@ -165,9 +160,19 @@ export type SaveAnswersMutationVariables = Exact<{
 
 export type SaveAnswersMutation = { __typename?: 'Mutation', saveAnswers: boolean };
 
+export type GetNextWordsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetNextWordsQuery = { __typename?: 'Query', getNextWords: Array<{ __typename?: 'GameWord', similarEnWords: Array<string>, similarPlWords: Array<string>, word: { __typename?: 'WordEntity', id: number, definition_en?: string | null, word_en: string, word_pl: string, examples: Array<string>, type?: string | null, base_word_en?: string | null, other_forms: Array<string>, tags: Array<string> }, wordLearnStatus: { __typename?: 'WordLearnStatusDto', allAnsweres: number, correctAnswers: number, incorrectAnswers: number } }> };
+
+export type WordOfTheDayQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type WordOfTheDayQuery = { __typename?: 'Query', wordOfTheDay: { __typename?: 'WordEntity', word_en: string, word_pl: string, type?: string | null, definition_en?: string | null, examples: Array<string> } };
+
 
 export const RefreshTokenDocument = gql`
-    mutation RefreshToken($refreshToken: String!) {
+    query RefreshToken($refreshToken: String!) {
   refreshToken(refreshToken: $refreshToken) {
     accessToken
     refreshToken
@@ -179,32 +184,39 @@ export const RefreshTokenDocument = gql`
   }
 }
     `;
-export type RefreshTokenMutationFn = Apollo.MutationFunction<RefreshTokenMutation, RefreshTokenMutationVariables>;
 
 /**
- * __useRefreshTokenMutation__
+ * __useRefreshTokenQuery__
  *
- * To run a mutation, you first call `useRefreshTokenMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useRefreshTokenMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
+ * To run a query within a React component, call `useRefreshTokenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRefreshTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const [refreshTokenMutation, { data, loading, error }] = useRefreshTokenMutation({
+ * const { data, loading, error } = useRefreshTokenQuery({
  *   variables: {
  *      refreshToken: // value for 'refreshToken'
  *   },
  * });
  */
-export function useRefreshTokenMutation(baseOptions?: Apollo.MutationHookOptions<RefreshTokenMutation, RefreshTokenMutationVariables>) {
+export function useRefreshTokenQuery(baseOptions: Apollo.QueryHookOptions<RefreshTokenQuery, RefreshTokenQueryVariables> & ({ variables: RefreshTokenQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<RefreshTokenMutation, RefreshTokenMutationVariables>(RefreshTokenDocument, options);
+        return Apollo.useQuery<RefreshTokenQuery, RefreshTokenQueryVariables>(RefreshTokenDocument, options);
       }
-export type RefreshTokenMutationHookResult = ReturnType<typeof useRefreshTokenMutation>;
-export type RefreshTokenMutationResult = Apollo.MutationResult<RefreshTokenMutation>;
-export type RefreshTokenMutationOptions = Apollo.BaseMutationOptions<RefreshTokenMutation, RefreshTokenMutationVariables>;
+export function useRefreshTokenLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<RefreshTokenQuery, RefreshTokenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<RefreshTokenQuery, RefreshTokenQueryVariables>(RefreshTokenDocument, options);
+        }
+export function useRefreshTokenSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<RefreshTokenQuery, RefreshTokenQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<RefreshTokenQuery, RefreshTokenQueryVariables>(RefreshTokenDocument, options);
+        }
+export type RefreshTokenQueryHookResult = ReturnType<typeof useRefreshTokenQuery>;
+export type RefreshTokenLazyQueryHookResult = ReturnType<typeof useRefreshTokenLazyQuery>;
+export type RefreshTokenSuspenseQueryHookResult = ReturnType<typeof useRefreshTokenSuspenseQuery>;
+export type RefreshTokenQueryResult = Apollo.QueryResult<RefreshTokenQuery, RefreshTokenQueryVariables>;
 export const RegisterDocument = gql`
     mutation Register($email: String!, $name: String!, $password: String!) {
   register(input: {email: $email, name: $name, password: $password})
@@ -248,6 +260,15 @@ export const LoginDocument = gql`
     }
     accessToken
     refreshToken
+    userData {
+      exp
+      speedModeProgress {
+        allAnswers
+        streak
+        correctAnswers
+      }
+      streak
+    }
   }
 }
     `;
@@ -278,6 +299,37 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const SaveAnswersDocument = gql`
+    mutation saveAnswers($input: [GivenAnswerInput!]!) {
+  saveAnswers(input: $input)
+}
+    `;
+export type SaveAnswersMutationFn = Apollo.MutationFunction<SaveAnswersMutation, SaveAnswersMutationVariables>;
+
+/**
+ * __useSaveAnswersMutation__
+ *
+ * To run a mutation, you first call `useSaveAnswersMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSaveAnswersMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [saveAnswersMutation, { data, loading, error }] = useSaveAnswersMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useSaveAnswersMutation(baseOptions?: Apollo.MutationHookOptions<SaveAnswersMutation, SaveAnswersMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SaveAnswersMutation, SaveAnswersMutationVariables>(SaveAnswersDocument, options);
+      }
+export type SaveAnswersMutationHookResult = ReturnType<typeof useSaveAnswersMutation>;
+export type SaveAnswersMutationResult = Apollo.MutationResult<SaveAnswersMutation>;
+export type SaveAnswersMutationOptions = Apollo.BaseMutationOptions<SaveAnswersMutation, SaveAnswersMutationVariables>;
 export const GetNextWordsDocument = gql`
     query getNextWords {
   getNextWords {
@@ -334,34 +386,46 @@ export type GetNextWordsQueryHookResult = ReturnType<typeof useGetNextWordsQuery
 export type GetNextWordsLazyQueryHookResult = ReturnType<typeof useGetNextWordsLazyQuery>;
 export type GetNextWordsSuspenseQueryHookResult = ReturnType<typeof useGetNextWordsSuspenseQuery>;
 export type GetNextWordsQueryResult = Apollo.QueryResult<GetNextWordsQuery, GetNextWordsQueryVariables>;
-export const SaveAnswersDocument = gql`
-    mutation saveAnswers($input: [GivenAnswerInput!]!) {
-  saveAnswers(input: $input)
+export const WordOfTheDayDocument = gql`
+    query wordOfTheDay {
+  wordOfTheDay {
+    word_en
+    word_pl
+    type
+    definition_en
+    examples
+  }
 }
     `;
-export type SaveAnswersMutationFn = Apollo.MutationFunction<SaveAnswersMutation, SaveAnswersMutationVariables>;
 
 /**
- * __useSaveAnswersMutation__
+ * __useWordOfTheDayQuery__
  *
- * To run a mutation, you first call `useSaveAnswersMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSaveAnswersMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
+ * To run a query within a React component, call `useWordOfTheDayQuery` and pass it any options that fit your needs.
+ * When your component renders, `useWordOfTheDayQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const [saveAnswersMutation, { data, loading, error }] = useSaveAnswersMutation({
+ * const { data, loading, error } = useWordOfTheDayQuery({
  *   variables: {
- *      input: // value for 'input'
  *   },
  * });
  */
-export function useSaveAnswersMutation(baseOptions?: Apollo.MutationHookOptions<SaveAnswersMutation, SaveAnswersMutationVariables>) {
+export function useWordOfTheDayQuery(baseOptions?: Apollo.QueryHookOptions<WordOfTheDayQuery, WordOfTheDayQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<SaveAnswersMutation, SaveAnswersMutationVariables>(SaveAnswersDocument, options);
+        return Apollo.useQuery<WordOfTheDayQuery, WordOfTheDayQueryVariables>(WordOfTheDayDocument, options);
       }
-export type SaveAnswersMutationHookResult = ReturnType<typeof useSaveAnswersMutation>;
-export type SaveAnswersMutationResult = Apollo.MutationResult<SaveAnswersMutation>;
-export type SaveAnswersMutationOptions = Apollo.BaseMutationOptions<SaveAnswersMutation, SaveAnswersMutationVariables>;
+export function useWordOfTheDayLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<WordOfTheDayQuery, WordOfTheDayQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<WordOfTheDayQuery, WordOfTheDayQueryVariables>(WordOfTheDayDocument, options);
+        }
+export function useWordOfTheDaySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<WordOfTheDayQuery, WordOfTheDayQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<WordOfTheDayQuery, WordOfTheDayQueryVariables>(WordOfTheDayDocument, options);
+        }
+export type WordOfTheDayQueryHookResult = ReturnType<typeof useWordOfTheDayQuery>;
+export type WordOfTheDayLazyQueryHookResult = ReturnType<typeof useWordOfTheDayLazyQuery>;
+export type WordOfTheDaySuspenseQueryHookResult = ReturnType<typeof useWordOfTheDaySuspenseQuery>;
+export type WordOfTheDayQueryResult = Apollo.QueryResult<WordOfTheDayQuery, WordOfTheDayQueryVariables>;
