@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { RegisterInput } from './dto/register.input';
 import { UserService } from '../user/user.service';
-import { AuthPayload } from './auth-payload.dto';
+import { AuthPayload } from './dto/auth-payload.dto';
 
 @Injectable()
 export class AuthService {
@@ -65,7 +65,6 @@ export class AuthService {
         expiresIn: '28d',
       }),
       user,
-      userData: await this.userService.getUserData(user)
     };
   }
 

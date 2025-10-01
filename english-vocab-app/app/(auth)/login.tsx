@@ -33,7 +33,7 @@ export default function LoginScreen() {
 
     try {
       await auth.signIn(email, password)
-      router.replace("/(app)")
+      router.replace("/(app)/tabs")
     } catch (error) {
       if (error instanceof ApolloError) {
         const errors = error.graphQLErrors[0] as GraphQLFormattedError

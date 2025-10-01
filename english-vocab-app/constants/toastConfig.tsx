@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import { useThemeColors } from "@/hooks/useThemeColor";
+import { useThemeColors } from "@/hooks/theme/useThemeColor";
 import { ToastConfig, ToastConfigParams } from "react-native-toast-message";
 import { ThemedText } from "@/components/ThemedText";
 import FontAwesome from "@expo/vector-icons/FontAwesome"; // you can use your theme system

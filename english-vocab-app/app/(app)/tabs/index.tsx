@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/ThemedText";
 import AppContainer from "@/components/index/AppContainer";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useThemeColors } from "@/hooks/useThemeColor";
+import { useThemeColors } from "@/hooks/theme/useThemeColor";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import ProfileSection from "@/components/index/ProfileSection";
 import StreakSection from "@/components/index/StreakSection";

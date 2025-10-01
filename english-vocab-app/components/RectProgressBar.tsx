@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import Svg, { Path } from "react-native-svg"
 import Animated, { Easing, runOnJS, useAnimatedProps, useSharedValue, withTiming, } from "react-native-reanimated"
-import { useThemeColors } from "@/hooks/useThemeColor"
+import { useThemeColors } from "@/hooks/theme/useThemeColor"
 import { StyleProp, ViewStyle } from "react-native"
 
 type RectProgressProps = {

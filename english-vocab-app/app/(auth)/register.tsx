@@ -65,7 +65,7 @@ export default function RegisterScreen() {
     }
 
     // here the user is signed up and logged in
-    router.replace("/(app)")
+    router.replace("/(app)/tabs/index")
   }
 
   return (

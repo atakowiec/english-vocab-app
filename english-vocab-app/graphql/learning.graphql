@@ -1,0 +1,26 @@
+mutation saveAnswers($input: [GivenAnswerInput!]!) {
+    saveAnswers(input: $input)
+}
+
+query getNextWords {
+    getNextWords {
+        word {
+            id
+            definition_en
+            word_en
+            word_pl
+            examples
+            type
+            base_word_en,
+            other_forms,
+            tags
+        }
+        similarEnWords
+        similarPlWords
+        wordLearnStatus {
+            allAnsweres
+            correctAnswers
+            incorrectAnswers
+        }
+    }
+}

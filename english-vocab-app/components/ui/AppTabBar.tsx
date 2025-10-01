@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import TabBarItem from "@/components/ui/TabBarItem";
-import { useThemeColors } from "@/hooks/useThemeColor";
+import { useThemeColors } from "@/hooks/theme/useThemeColor";
 import { MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
 
 

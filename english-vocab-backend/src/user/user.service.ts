@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import UserDataDto from './user-data.dto';
+import UserDataDto from './dto/user-data.dto';
 import { LearnStatusService } from '../learn-status/learn-status.service';
 
 @Injectable()
@@ -30,9 +30,14 @@ export class UserService {
 
   async getUserData(user: User): Promise<UserDataDto> {
     return {
-      exp: user.exp,
+      userId: user.id,
       streak: 0, // todo
-      speedModeProgress: await this.learnStatusService.getUserProgress("SPEED_MODE", user),
+      speedModeProgress: await this.learnStatusService.getUserProgress('SPEED_MODE', user),
+      expData: {
+        currentExp: 100,
+        requiredExp: 200,
+        level: 1,
+      },
     };
   }
 }

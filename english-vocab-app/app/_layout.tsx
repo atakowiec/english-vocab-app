@@ -3,12 +3,12 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useColorScheme } from '@/hooks/theme/useColorScheme';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ApolloClient, ApolloProvider } from "@apollo/client";
 import { AuthContextProvider } from "@/context/AuthContext";
 import { View } from "react-native";
-import { useThemeColors } from "@/hooks/useThemeColor";
+import { useThemeColors } from "@/hooks/theme/useThemeColor";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/constants/toastConfig";
 import { PreferencesProvider } from "@/context/PreferencesContext";
@@ -42,7 +42,6 @@ export default function RootLayout() {
                 <Stack>
                   <Stack.Screen name="index" options={{ headerShown: false }}/>
                   <Stack.Screen name="(app)" options={{ headerShown: false }}/>
-                  <Stack.Screen name="(modes)" options={{ headerShown: false }}/>
                   <Stack.Screen name="(auth)" options={{ headerShown: false }}/>
                   <Stack.Screen name="+not-found"/>
                 </Stack>

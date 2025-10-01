@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import WordEntity from '../words/word.entity';
-import { User } from '../user/user.entity';
+import WordEntity from '../../words/word.entity';
+import { User } from '../../user/user.entity';
 
 /**
  * A class that represents a single entry in user's learning.

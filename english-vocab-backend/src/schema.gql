@@ -26,9 +26,16 @@ type ModeProgressDto {
   allAnswers: Float!
 }
 
+type ExpDataDto {
+  level: Float!
+  currentExp: Float!
+  requiredExp: Float!
+}
+
 type UserDataDto {
+  userId: Float!
   streak: Float!
-  exp: Float!
+  expData: ExpDataDto!
   speedModeProgress: ModeProgressDto!
 }
 
@@ -36,7 +43,6 @@ type AuthPayload {
   accessToken: String!
   refreshToken: String!
   user: User!
-  userData: UserDataDto!
 }
 
 type WordLearnStatusDto {
@@ -53,6 +59,7 @@ type GameWord {
 }
 
 type Query {
+  getUserData: UserDataDto!
   hello: String!
   refreshToken(refreshToken: String!): AuthPayload!
   wordOfTheDay: WordEntity!

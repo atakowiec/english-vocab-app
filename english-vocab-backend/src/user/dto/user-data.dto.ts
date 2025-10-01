@@ -1,5 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import ModeProgressDto from '../learn-status/mode-progress.dto';
+import ModeProgressDto from '../../learn-status/dto/mode-progress.dto';
+import ExpDataDto from './exp-data.dto';
 
 /**
  * A class that holds all the information about logged-in user
@@ -8,14 +9,14 @@ import ModeProgressDto from '../learn-status/mode-progress.dto';
 @ObjectType()
 export default class UserDataDto {
   @Field()
-  streak: number;
+  userId: number;
 
   @Field()
-  exp: number;
+  streak: number;
+
+  @Field(() => ExpDataDto)
+  expData: ExpDataDto;
 
   @Field(() => ModeProgressDto)
   speedModeProgress: ModeProgressDto;
-
-  // @Field(() => ModeProgressDto)
-  // wordBuildingProgress: ModeProgressDto;
 }

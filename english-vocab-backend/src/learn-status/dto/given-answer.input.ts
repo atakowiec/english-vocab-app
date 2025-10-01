@@ -1,5 +1,4 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { LearnMode } from './learn-mode';
 
 @InputType()
 export class GivenAnswerInput {

@@ -2,12 +2,10 @@ import SectionBox from "@/components/index/SectionBox";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import { useThemeColors } from "@/hooks/useThemeColor";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 
 export default function ProfileSection() {
-  const colors = useThemeColors();
   const router = useRouter();
   const { user } = useAuth()!
 
@@ -20,21 +18,21 @@ export default function ProfileSection() {
             <ThemedText type={"subtitle"}>
               {user?.name}
             </ThemedText>
-            <View style={[styles.levelLabel, { backgroundColor: colors.accent_blue }]}>
-              <ThemedText colorKey={"background_blue_2"} style={{ fontSize: 16, fontWeight: 600 }}>
-                5 level
-              </ThemedText>
-            </View>
+            {/*<View style={[styles.levelLabel, { backgroundColor: colors.accent_blue }]}>*/}
+            {/*  <ThemedText colorKey={"background_blue_2"} style={{ fontSize: 16, fontWeight: 600 }}>*/}
+            {/*    {userData?.exp} level*/}
+            {/*  </ThemedText>*/}
+            {/*</View>*/}
           </View>
-          <View style={styles.progressBox}>
-            <View style={styles.progressBar}>
-              <View style={styles.progressBarInner}>
-              </View>
-            </View>
-            <ThemedText colorKey={"text_secondary"} style={{ fontSize: 11 }}>
-              1188 / 2000 xp
-            </ThemedText>
-          </View>
+          {/*<View style={styles.progressBox}>*/}
+          {/*  <View style={styles.progressBar}>*/}
+          {/*    <View style={styles.progressBarInner}>*/}
+          {/*    </View>*/}
+          {/*  </View>*/}
+          {/*  <ThemedText colorKey={"text_secondary"} style={{ fontSize: 11 }}>*/}
+          {/*    1188 / 2000 xp*/}
+          {/*  </ThemedText>*/}
+          {/*</View>*/}
         </View>
       </SectionBox>
     </TouchableOpacity>
