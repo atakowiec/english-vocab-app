@@ -1,8 +1,8 @@
 import { StyleSheet, View } from "react-native";
 import { Link, useRouter } from "expo-router";
-import ThemedInput from "@/components/ThemedInput";
-import ThemedButton from "@/components/ThemedButton";
-import { ThemedText } from "@/components/ThemedText";
+import ThemedInput from "@/components/theme/ThemedInput";
+import ThemedButton from "@/components/theme/ThemedButton";
+import { ThemedText } from "@/components/theme/ThemedText";
 import HeightGap from "@/components/HeightGap";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -65,7 +65,7 @@ export default function RegisterScreen() {
     }
 
     // here the user is signed up and logged in
-    router.replace("/(app)")
+    router.replace("/(app)/tabs/index")
   }
 
   return (

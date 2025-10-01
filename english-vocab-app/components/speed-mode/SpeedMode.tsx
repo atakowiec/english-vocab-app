@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSpeedModeData } from "@/context/SpeedModeContext";
-import { ThemedView } from "@/components/ThemedView";
+import { ThemedView } from "@/components/theme/ThemedView";
 import RectProgressBar from "@/components/RectProgressBar";
 import { Dimensions } from "react-native";
 import MainQuestionScreen from "@/components/speed-mode/MainQuestionScreen";

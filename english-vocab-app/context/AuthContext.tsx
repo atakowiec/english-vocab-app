@@ -1,13 +1,15 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useRef } from "react";
 import { getToken, removeToken, saveToken } from "@/utils/tokenStorage";
 import { useRouter } from "expo-router";
 import {
   AuthPayload,
   useLoginMutation,
-  User, useRefreshTokenLazyQuery,
+  User,
+  useRefreshTokenLazyQuery,
   useRegisterMutation
 } from "@/graphql/gql-generated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUserStore } from "@/hooks/store/userStore";
 
 type AuthContextPayload = {
   accessToken: string | null,
@@ -21,11 +23,9 @@ const AuthContext = createContext<AuthContextPayload | null>(null);
 
 export function AuthContextProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null)
-  const [accessToken, setAccessToken] = useState<string | null>(null)
-  const [refreshToken] = useRefreshTokenLazyQuery({
-    fetchPolicy: "cache-and-network"
-  })
+  const {user, setUser} = useUserStore()
+  const accessToken = useRef<string | null>(null)
+  const [refreshToken] = useRefreshTokenLazyQuery()
   const [register] = useRegisterMutation()
   const [login] = useLoginMutation()
 
@@ -36,10 +36,10 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      if (!accessToken) {
+      if (!accessToken.current) {
         await AsyncStorage.removeItem("access_token")
       } else {
-        await AsyncStorage.setItem("access_token", accessToken)
+        await AsyncStorage.setItem("access_token", accessToken.current)
       }
     })()
   }, [accessToken]);
@@ -48,13 +48,11 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
     const token = await getToken()
 
     if (!token) {
-      console.log("no token")
       router.replace("/(auth)/login")
       return
     }
 
     try {
-
       const refresh = await refreshToken({
         variables: {
           refreshToken: token,
@@ -64,18 +62,14 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
       const data = refresh.data?.refreshToken
 
       if (!data?.user) {
-        console.log("no user")
         await removeToken()
         router.replace("/(auth)/login")
         return
       }
 
-      await saveToken(data.refreshToken)
+      await updateState(data)
 
-      setAccessToken(data.accessToken)
-      setUser(data.user)
-
-      router.replace('/(app)')
+      router.replace('/(app)/tabs')
     } catch {
       await removeToken()
       router.replace("/(auth)/login")
@@ -96,9 +90,7 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    await saveToken(data.refreshToken)
-    setAccessToken(data.accessToken)
-    setUser(data.user)
+    await updateState(data)
 
     return data
   }
@@ -116,19 +108,31 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
   }
 
   async function signOut() {
-    await removeToken()
-    setAccessToken(null)
-    setUser(null)
+    await updateState()
     router.replace("/(auth)/login")
+  }
+
+  async function updateState(data: AuthPayload | null = null) {
+    if (!data?.user) {
+      await removeToken()
+      accessToken.current = null
+      setUser(null)
+      return
+    }
+
+    await AsyncStorage.setItem("access_token", data.accessToken)
+    await saveToken(data.refreshToken)
+    accessToken.current = data.accessToken
+    setUser(data.user)
   }
 
   return (
     <AuthContext.Provider value={{
-      accessToken,
+      accessToken: accessToken.current,
       user,
       signIn,
       signOut,
-      signUp
+      signUp,
     }}>
       {children}
     </AuthContext.Provider>

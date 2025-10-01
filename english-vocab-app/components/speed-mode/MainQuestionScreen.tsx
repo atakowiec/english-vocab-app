@@ -1,6 +1,6 @@
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "@/components/theme/ThemedText";
 import { TouchableOpacity, View } from "react-native";
-import { useThemeColors } from "@/hooks/useThemeColor";
+import { useThemeColors } from "@/hooks/theme/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
 import Answers from "@/components/speed-mode/Answers";
 import { useSpeedModeData } from "@/context/SpeedModeContext";

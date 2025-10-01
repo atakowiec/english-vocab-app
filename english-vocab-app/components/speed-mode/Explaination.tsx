@@ -1,6 +1,6 @@
 import { Animated, ScrollView } from "react-native";
-import { ThemedText } from "../ThemedText";
-import { useThemeColors } from "@/hooks/useThemeColor";
+import { ThemedText } from "../theme/ThemedText";
+import { useThemeColors } from "@/hooks/theme/useThemeColor";
 import { useSpeedModeData, WordType } from "@/context/SpeedModeContext";
 import { styles } from "@/styles/speed-test"
 import { useEffect, useRef } from "react";

@@ -1,4 +1,4 @@
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "@/components/theme/ThemedText";
 import AppContainer from "@/components/index/AppContainer";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import SectionBox from "@/components/index/SectionBox";
@@ -17,7 +17,7 @@ export default function ModeSelectorScreen() {
       <View style={styles.modesBox}>
         <View style={styles.modesRow}>
           <TouchableOpacity style={[styles.modeCardTouchable]} activeOpacity={.6}
-                            onPress={() => router.push("/(modes)/speed-mode-lobby")}>
+                            onPress={() => router.push("/(app)/modes/speed-mode-lobby")}>
             <SectionBox style={[styles.modeCard]}>
               <View style={styles.modeNameBox}>
                 <MaterialCommunityIcons name="timer" size={25} color="white"/>
@@ -31,7 +31,7 @@ export default function ModeSelectorScreen() {
             </SectionBox>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.modeCardTouchable]} activeOpacity={.6}
-                            onPress={() => router.push("/(modes)/speed-mode")}>
+                            onPress={() => router.push("/(app)/modes/speed-mode")}>
             <SectionBox style={[styles.modeCard]}>
               <View style={styles.modeNameBox}>
                 <MaterialCommunityIcons name="toy-brick" size={25} color="white"/>
@@ -46,7 +46,7 @@ export default function ModeSelectorScreen() {
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={[styles.modeCardTouchable]} activeOpacity={.6}
-                          onPress={() => router.push("/(modes)/learning-mode")}>
+                          onPress={() => router.push("/(app)/modes/learning-mode")}>
           <SectionBox style={[styles.modeCard]}>
             <View style={styles.modeNameBox}>
               <Ionicons name="sparkles" size={25} color={"white"}/>

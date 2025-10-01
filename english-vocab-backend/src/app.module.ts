@@ -10,9 +10,11 @@ import { WordsModule } from './words/words.module';
 import { SpeedModeModule } from './speed-mode/speed-mode.module';
 import WordStatus from './scrapper/word-status.entity';
 import WordEntity from './words/word.entity';
-import WordLearnEntry from './learn-status/word-learn-entry.entity';
+import WordLearnEntry from './learn-status/dto/word-learn-entry.entity';
 import { ConfigModule } from '@nestjs/config';
 import { LearnStatusModule } from './learn-status/learn-status.module';
+import { UserDataModule } from './user-data/user-data.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -34,12 +36,14 @@ import { LearnStatusModule } from './learn-status/learn-status.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    EventEmitterModule.forRoot({ global: true }),
     UserModule,
     AuthModule,
     ScrapperModule,
     WordsModule,
     SpeedModeModule,
     LearnStatusModule,
+    UserDataModule,
   ],
   controllers: [],
   providers: [],

@@ -4,13 +4,10 @@ import { SpeedModeResolver } from './speed-mode.resolver';
 import { WordsModule } from '../words/words.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import WordEntity from '../words/word.entity';
-import WordLearnEntry from '../learn-status/word-learn-entry.entity';
-import { LearnStatusModule } from '../learn-status/learn-status.module';
 
 @Module({
   imports: [WordsModule,
-    LearnStatusModule,
-    TypeOrmModule.forFeature([WordEntity, WordLearnEntry])],
+    TypeOrmModule.forFeature([WordEntity])],
   providers: [SpeedModeService, SpeedModeResolver],
 })
 export class SpeedModeModule {}

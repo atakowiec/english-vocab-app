@@ -1,20 +1,22 @@
 import BackButton from "@/components/BackButton";
 import { StyleSheet, View } from "react-native";
-import { ThemedView } from "@/components/ThemedView";
+import { ThemedView } from "@/components/theme/ThemedView";
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "@/components/theme/ThemedText";
 import { DifficultySelector } from "@/components/speed-mode/DifficultySelector";
-import { useThemeColors } from "@/hooks/useThemeColor";
-import ThemedButton from "@/components/ThemedButton";
+import { useThemeColors } from "@/hooks/theme/useThemeColor";
+import ThemedButton from "@/components/theme/ThemedButton";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useState } from "react";
 import { usePreferences } from "@/context/PreferencesContext";
 import { router } from "expo-router";
+import { useUserDataStore } from "@/hooks/store/userDataStore";
 
 export type Difficulty = "easy" | "medium" | "hard";
 
 export default function SpeedModeLobby() {
   const colors = useThemeColors();
+  const userData = useUserDataStore()
   const { getPreference } = usePreferences();
   const [difficulty, setDifficulty] = useState<Difficulty>(getPreference("speed-test-difficulty", "medium"))
 
@@ -31,7 +33,7 @@ export default function SpeedModeLobby() {
         <ThemedView colorKey={"background_blue_2"} style={styles.streakBox}>
           <Ionicons name="flame-sharp" size={30} color="#F29D38"/>
           <ThemedText style={{ fontSize: 19 }}>
-            123
+            {userData?.speedModeProgress?.streak || 0}
           </ThemedText>
         </ThemedView>
       </View>
@@ -56,7 +58,7 @@ export default function SpeedModeLobby() {
           </ThemedText>
         </ThemedView>
         <View style={styles.bottomButtons}>
-          <ThemedButton style={styles.startButton} onPress={() => router.replace("/(modes)/speed-mode")}>
+          <ThemedButton style={styles.startButton} onPress={() => router.replace("/(app)/modes/speed-mode")}>
             <FontAwesome name={"play"} size={18} color={colors.background_blue_1}/>
             <ThemedText colorKey={"background_blue_1"}>
               Start

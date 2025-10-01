@@ -1,8 +1,8 @@
 import { View } from "react-native";
 import { Link, useRouter } from "expo-router";
-import ThemedInput from "@/components/ThemedInput";
-import ThemedButton from "@/components/ThemedButton";
-import { ThemedText } from "@/components/ThemedText";
+import ThemedInput from "@/components/theme/ThemedInput";
+import ThemedButton from "@/components/theme/ThemedButton";
+import { ThemedText } from "@/components/theme/ThemedText";
 import HeightGap from "@/components/HeightGap";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -33,7 +33,7 @@ export default function LoginScreen() {
 
     try {
       await auth.signIn(email, password)
-      router.replace("/(app)")
+      router.replace("/(app)/tabs")
     } catch (error) {
       if (error instanceof ApolloError) {
         const errors = error.graphQLErrors[0] as GraphQLFormattedError

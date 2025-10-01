@@ -1,6 +1,6 @@
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "@/components/theme/ThemedText";
 import { StyleSheet, View } from "react-native";
-import ThemedButton from "@/components/ThemedButton";
+import ThemedButton from "@/components/theme/ThemedButton";
 
 type Props = {
   count: number;

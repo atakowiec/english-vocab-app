@@ -3,7 +3,7 @@ import { CurrentUser } from '../auth/current-user.decorator';
 import { User } from '../user/user.entity';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/auth.guard';
-import { GivenAnswerInput } from './given-answer.input';
+import { GivenAnswerInput } from './dto/given-answer.input';
 import { LearnStatusService } from './learn-status.service';
 
 @Resolver()

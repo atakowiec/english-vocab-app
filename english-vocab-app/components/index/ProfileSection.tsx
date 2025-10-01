@@ -1,18 +1,89 @@
 import SectionBox from "@/components/index/SectionBox";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
-import { useThemeColors } from "@/hooks/useThemeColor";
+import { ThemedText } from "@/components/theme/ThemedText";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
+import { useUserDataStore } from "@/hooks/store/userDataStore";
+import { useThemeColors } from "@/hooks/theme/useThemeColor";
+import { useEffect, useRef, useState } from "react";
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 
 export default function ProfileSection() {
-  const colors = useThemeColors();
   const router = useRouter();
+  const colors = useThemeColors()
   const { user } = useAuth()!
+  const userData = useUserDataStore()
+  const expData = userData.expData;
+
+  const progress = useSharedValue(0)
+  const [displayedLevel, setDisplayedLevel] = useState<number>(1)
+  const lastLoaded = useRef(false)
+
+  // use effect execute once exp data changes
+  useEffect(() => {
+    // if its first load - animate to the current level
+    if (!lastLoaded.current) {
+      if (!userData.loaded)
+        return;
+
+      lastLoaded.current = true
+      animateToCurrentLevel()
+      return;
+    }
+
+    if (displayedLevel < expData.level) {
+      // level up animation
+      animateToNextLevel()
+    } else {
+      // normal exp gain animation
+      animateToCurrentLevel()
+    }
+
+    function onFinish() {
+      setDisplayedLevel(prev => {
+        const newDisplayedLevel = prev + 1;
+        if (expData.level > newDisplayedLevel) {
+          animateToNextLevel()
+        } else {
+          animateToCurrentLevel()
+        }
+
+        return newDisplayedLevel;
+      })
+    }
+
+    function animateToNextLevel() {
+      progress.value = withTiming(1, {
+        duration: 600,
+        easing: Easing.linear,
+      }, (finished) => {
+        if (!finished)
+          return;
+
+        progress.value = 0
+        scheduleOnRN(onFinish)
+      })
+    }
+
+    function animateToCurrentLevel() {
+      setDisplayedLevel(expData.level)
+      progress.value = withTiming(expData.currentExp / expData.requiredExp, {
+        duration: 600,
+        easing: Easing.inOut(Easing.ease)
+      })
+    }
+
+  }, [expData.currentExp, expData.currentExp, expData.level]);
+
+
+  const animatedProgressStyle = useAnimatedStyle(() => ({
+    width: `${progress.value * 100}%`
+  }))
 
   return (
-    <TouchableOpacity activeOpacity={0.6} onPress={() => router.push("/(app)/profile")}>
+    <TouchableOpacity activeOpacity={0.6} onPress={() => router.push("/(app)/tabs/profile")}>
       <SectionBox style={styles.profileSection}>
         <FontAwesome name="user" size={40} color={"white"}/>
         <View style={styles.righBox}>
@@ -22,17 +93,17 @@ export default function ProfileSection() {
             </ThemedText>
             <View style={[styles.levelLabel, { backgroundColor: colors.accent_blue }]}>
               <ThemedText colorKey={"background_blue_2"} style={{ fontSize: 16, fontWeight: 600 }}>
-                5 level
+                {displayedLevel} level
               </ThemedText>
             </View>
           </View>
           <View style={styles.progressBox}>
             <View style={styles.progressBar}>
-              <View style={styles.progressBarInner}>
-              </View>
+              <Animated.View style={[styles.progressBarInner, animatedProgressStyle]}>
+              </Animated.View>
             </View>
             <ThemedText colorKey={"text_secondary"} style={{ fontSize: 11 }}>
-              1188 / 2000 xp
+              {expData.currentExp} / {expData.requiredExp} xp
             </ThemedText>
           </View>
         </View>
@@ -71,7 +142,6 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "#fff",
     borderRadius: 10,
-    width: "30%"
   },
   righBox: {
     flex: 1,

@@ -53,8 +53,9 @@ export class WordsService {
 
     const word = await this.repository
       .createQueryBuilder('word')
-      .orderBy('MOD(word.id, :dayOfTheCentury)', 'DESC')
-      .setParameter('dayOfTheCentury', dayOfTheCentury)
+      .orderBy('word.id')
+      .offset(dayOfTheCentury % (await this.repository.count()))
+      .limit(1)
       .getOne();
 
     if (!word) {

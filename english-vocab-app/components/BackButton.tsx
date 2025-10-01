@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { useThemeColors } from "@/hooks/useThemeColor";
+import { useThemeColors } from "@/hooks/theme/useThemeColor";
 import { useNavigation } from "expo-router";
 
 export default function BackButton() {

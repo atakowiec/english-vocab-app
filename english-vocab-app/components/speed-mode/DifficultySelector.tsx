@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
-import { useThemeColors } from "@/hooks/useThemeColor";
-import { Difficulty } from "@/app/(modes)/speed-mode-lobby";
+import { ThemedText } from "@/components/theme/ThemedText";
+import { useThemeColors } from "@/hooks/theme/useThemeColor";
+import { Difficulty } from "@/app/(app)/modes/speed-mode-lobby";
 import { usePreferences } from "@/context/PreferencesContext";
 
 type Props = {

@@ -1,4 +1,4 @@
-import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
+import { ThemedSafeAreaView } from "@/components/theme/ThemedSafeAreaView";
 import Logo from "@/components/Logo";
 import { StyleSheet } from "react-native";
 import HeightGap from "@/components/HeightGap";

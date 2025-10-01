@@ -1,6 +1,6 @@
 import { Animated, TouchableOpacity } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
-import { useThemeColors } from "@/hooks/useThemeColor";
+import { ThemedText } from "@/components/theme/ThemedText";
+import { useThemeColors } from "@/hooks/theme/useThemeColor";
 import { styles } from "@/styles/speed-test";
 import { useSpeedModeData } from "@/context/SpeedModeContext";
 import { useEffect, useRef, useState } from "react";

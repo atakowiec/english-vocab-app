@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { useThemeColors } from "@/hooks/useThemeColor";
+import { useThemeColors } from "@/hooks/theme/useThemeColor";
 
 type Props = {
   name: string;

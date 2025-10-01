@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import WordEntity from './word.entity';
-import WordLearnStatusDto from '../learn-status/word-learn-status.dto';
+import WordLearnStatusDto from '../learn-status/dto/word-learn-status.dto';
 
 /**
  * A GraphQL object type representing a game word, including all the data needed for the frontend

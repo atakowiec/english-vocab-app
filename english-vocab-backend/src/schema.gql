@@ -20,23 +20,10 @@ type User {
   name: String!
 }
 
-type ModeProgressDto {
-  streak: Float!
-  correctAnswers: Float!
-  allAnswers: Float!
-}
-
-type UserDataDto {
-  streak: Float!
-  exp: Float!
-  speedModeProgress: ModeProgressDto!
-}
-
 type AuthPayload {
   accessToken: String!
   refreshToken: String!
   user: User!
-  userData: UserDataDto!
 }
 
 type WordLearnStatusDto {
@@ -52,17 +39,48 @@ type GameWord {
   similarPlWords: [String!]!
 }
 
+type ModeProgressDto {
+  streak: Float!
+  correctAnswers: Float!
+  allAnswers: Float!
+}
+
+type ExpDataDto {
+  level: Float!
+  currentExp: Float!
+  requiredExp: Float!
+}
+
+type UserDataDto {
+  userId: Float!
+  streak: Float!
+  expData: ExpDataDto!
+  speedModeProgress: ModeProgressDto!
+}
+
 type Query {
   hello: String!
   refreshToken(refreshToken: String!): AuthPayload!
   wordOfTheDay: WordEntity!
   getNextWords: [GameWord!]!
+  getUserData: UserDataDto!
 }
 
 type Mutation {
-  saveAnswers(input: [GivenAnswerInput!]!): Boolean!
   register(input: RegisterInput!): Boolean!
   login(input: LoginInput!): AuthPayload!
+  saveAnswers(input: [GivenAnswerInput!]!): Boolean!
+}
+
+input RegisterInput {
+  email: String!
+  name: String!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
 }
 
 input GivenAnswerInput {
@@ -76,14 +94,3 @@ input GivenAnswerInput {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
-
-input RegisterInput {
-  email: String!
-  name: String!
-  password: String!
-}
-
-input LoginInput {
-  email: String!
-  password: String!
-}

@@ -1,5 +1,5 @@
 import SectionBox from "@/components/index/SectionBox";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "@/components/theme/ThemedText";
 import { View } from "react-native";
 import CircleProgress from "@/components/index/CircleProgress";
 

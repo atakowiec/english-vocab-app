@@ -1,14 +1,14 @@
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "@/components/theme/ThemedText";
 import AppContainer from "@/components/index/AppContainer";
 
-export default function ProfileScreen() {
+export default function LearningModeScreen() {
   return (
     <AppContainer>
       <ThemedText type={"title"}>
-        Your Profile
+        Learning Mode
       </ThemedText>
       <ThemedText type={"default"} colorKey={"text_secondary"}>
-        You look great today!
+        Here will be the Learning Mode screen.
       </ThemedText>
     </AppContainer>
   );

@@ -9,7 +9,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback
 } from "react-native";
-import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
+import { ThemedSafeAreaView } from "@/components/theme/ThemedSafeAreaView";
 import HeightGap from "@/components/HeightGap";
 import Logo from "@/components/Logo";
 

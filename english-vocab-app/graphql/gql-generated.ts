@@ -24,7 +24,13 @@ export type AuthPayload = {
   accessToken: Scalars['String']['output'];
   refreshToken: Scalars['String']['output'];
   user: User;
-  userData: UserDataDto;
+};
+
+export type ExpDataDto = {
+  __typename?: 'ExpDataDto';
+  currentExp: Scalars['Float']['output'];
+  level: Scalars['Float']['output'];
+  requiredExp: Scalars['Float']['output'];
 };
 
 export type GameWord = {
@@ -79,6 +85,7 @@ export type MutationSaveAnswersArgs = {
 export type Query = {
   __typename?: 'Query';
   getNextWords: Array<GameWord>;
+  getUserData: UserDataDto;
   hello: Scalars['String']['output'];
   refreshToken: AuthPayload;
   wordOfTheDay: WordEntity;
@@ -104,9 +111,10 @@ export type User = {
 
 export type UserDataDto = {
   __typename?: 'UserDataDto';
-  exp: Scalars['Float']['output'];
+  expData: ExpDataDto;
   speedModeProgress: ModeProgressDto;
   streak: Scalars['Float']['output'];
+  userId: Scalars['Float']['output'];
 };
 
 export type WordEntity = {
@@ -151,7 +159,12 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', accessToken: string, refreshToken: string, user: { __typename?: 'User', email: string, name: string, id: number }, userData: { __typename?: 'UserDataDto', exp: number, streak: number, speedModeProgress: { __typename?: 'ModeProgressDto', allAnswers: number, streak: number, correctAnswers: number } } } };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', accessToken: string, refreshToken: string, user: { __typename?: 'User', email: string, name: string, id: number } } };
+
+export type GetUserDataQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUserDataQuery = { __typename?: 'Query', getUserData: { __typename?: 'UserDataDto', streak: number, expData: { __typename?: 'ExpDataDto', level: number, currentExp: number, requiredExp: number }, speedModeProgress: { __typename?: 'ModeProgressDto', streak: number, correctAnswers: number, allAnswers: number } } };
 
 export type SaveAnswersMutationVariables = Exact<{
   input: Array<GivenAnswerInput> | GivenAnswerInput;
@@ -260,15 +273,6 @@ export const LoginDocument = gql`
     }
     accessToken
     refreshToken
-    userData {
-      exp
-      speedModeProgress {
-        allAnswers
-        streak
-        correctAnswers
-      }
-      streak
-    }
   }
 }
     `;
@@ -299,6 +303,55 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const GetUserDataDocument = gql`
+    query GetUserData {
+  getUserData {
+    expData {
+      level
+      currentExp
+      requiredExp
+    }
+    streak
+    speedModeProgress {
+      streak
+      correctAnswers
+      allAnswers
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetUserDataQuery__
+ *
+ * To run a query within a React component, call `useGetUserDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserDataQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetUserDataQuery(baseOptions?: Apollo.QueryHookOptions<GetUserDataQuery, GetUserDataQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserDataQuery, GetUserDataQueryVariables>(GetUserDataDocument, options);
+      }
+export function useGetUserDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserDataQuery, GetUserDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserDataQuery, GetUserDataQueryVariables>(GetUserDataDocument, options);
+        }
+export function useGetUserDataSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserDataQuery, GetUserDataQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUserDataQuery, GetUserDataQueryVariables>(GetUserDataDocument, options);
+        }
+export type GetUserDataQueryHookResult = ReturnType<typeof useGetUserDataQuery>;
+export type GetUserDataLazyQueryHookResult = ReturnType<typeof useGetUserDataLazyQuery>;
+export type GetUserDataSuspenseQueryHookResult = ReturnType<typeof useGetUserDataSuspenseQuery>;
+export type GetUserDataQueryResult = Apollo.QueryResult<GetUserDataQuery, GetUserDataQueryVariables>;
 export const SaveAnswersDocument = gql`
     mutation saveAnswers($input: [GivenAnswerInput!]!) {
   saveAnswers(input: $input)

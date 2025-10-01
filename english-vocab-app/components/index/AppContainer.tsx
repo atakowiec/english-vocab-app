@@ -1,11 +1,18 @@
 import { ReactNode } from "react";
-import { ThemedView } from "@/components/ThemedView";
-import { ScrollView, View, StyleSheet } from "react-native";
+import { ThemedView } from "@/components/theme/ThemedView";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollViewProps } from "react-native/Libraries/Components/ScrollView/ScrollView";
 
-export default function AppContainer({ children }: { children: ReactNode }) {
+type Props = {
+  children: ReactNode;
+} & ScrollViewProps;
+
+export default function AppContainer({ children, refreshControl, contentContainerStyle }: Props) {
   return (
     <ThemedView style={{ flex: 1 }}>
-      <ScrollView style={{marginBottom: 20}}>
+      <ScrollView style={{ marginBottom: 20 }}
+                  contentContainerStyle={contentContainerStyle}
+                  refreshControl={refreshControl}>
         <View style={styles.container}>
           {children}
         </View>
