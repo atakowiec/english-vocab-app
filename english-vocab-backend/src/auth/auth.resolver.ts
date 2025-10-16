@@ -27,6 +27,6 @@ export class AuthResolver {
 
   @Query(() => AuthPayload)
   async refreshToken(@Args('refreshToken') refreshToken: string): Promise<AuthPayload> {
-    return this.authService.varifyRefreshToken(refreshToken);
+    return this.authService.verifyRefreshToken(refreshToken);
   }
 }

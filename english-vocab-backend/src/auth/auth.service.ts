@@ -68,7 +68,7 @@ export class AuthService {
     };
   }
 
-  async varifyRefreshToken(refreshToken: string): Promise<AuthPayload> {
+  async verifyRefreshToken(refreshToken: string): Promise<AuthPayload> {
     this.logger.log(`Verifying refresh token`);
     if (!refreshToken) {
       this.logger.warn('Refresh token is missing');
