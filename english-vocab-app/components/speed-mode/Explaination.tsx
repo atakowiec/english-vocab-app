@@ -50,14 +50,19 @@ export default function Explaination({ word, dummy = false }: Props) {
         <ThemedText type={"small"} colorKey={"text_secondary"}>
           {word.word.definition_en}
         </ThemedText>
-        <ThemedText type={"defaultSemiBold"} style={{ marginTop: 15 }}>
-          Example:
-        </ThemedText>
-        {word.word.examples.map((example, i) => (
-          <ThemedText type={"small"} colorKey={"text_secondary"} key={`${example}-${i}`}>
-            - {example}
-          </ThemedText>
-        ))}
+        {
+          word.word.examples.length > 0 && (
+            <>
+              <ThemedText type={"defaultSemiBold"} style={{ marginTop: 15 }}>
+                Example:
+              </ThemedText>
+              {word.word.examples.map((example, i) => (
+                <ThemedText type={"small"} colorKey={"text_secondary"} key={`${example}-${i}`}>
+                  - {example}
+                </ThemedText>
+              ))}
+            </>
+          )}
       </ScrollView>
     </Animated.View>
   )
