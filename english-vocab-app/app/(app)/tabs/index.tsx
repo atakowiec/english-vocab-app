@@ -10,10 +10,14 @@ import TodaysWordSection from "@/components/index/TodaysWordSection";
 import { useAppContext } from "@/context/AppContext";
 import { useCallback, useEffect, useState } from "react";
 import ThemedRefreshControl from "@/components/theme/ThemedRefreshControl";
+import { useUserDataStore } from "@/hooks/store/userDataStore";
+import { useRouter } from "expo-router";
 
 export default function HomeScreen() {
   const colors = useThemeColors();
+  const router = useRouter();
   const { refreshUserData } = useAppContext()
+  const lastPlayedMode = useUserDataStore(data => data.lastPlayedMode)
   const [refreshing, setRefreshing] = useState(false)
 
   const refresh = useCallback(async () => {
@@ -26,8 +30,21 @@ export default function HomeScreen() {
   }, [])
 
   useEffect(() => {
+    setRefreshing(true)
     setTimeout(refresh, 1000)
   }, []);
+
+  function continueLearning() {
+    switch (lastPlayedMode) {
+      case "SPEED_MODE":
+        router.push("/(app)/modes/speed-mode-lobby")
+        break;
+
+      default:
+        router.push("/(app)/tabs/mode-selector")
+        break;
+    }
+  }
 
   return (
     <AppContainer
@@ -46,10 +63,11 @@ export default function HomeScreen() {
           <GoalSection/>
         </View>
         <TodaysWordSection/>
-        <TouchableOpacity style={[styles.continueButton, { backgroundColor: colors.accent_blue }]} activeOpacity={0.8}>
+        <TouchableOpacity style={[styles.continueButton, { backgroundColor: colors.accent_blue }]} activeOpacity={0.8}
+                          onPress={continueLearning}>
           <FontAwesome name={"play"} size={18} color={colors.background_blue_2}/>
           <Text style={[{ color: colors.background_blue_2 }, styles.continueButtonText]}>
-            Continue Learning
+            {lastPlayedMode ? `Continue Learning` : "Start Learning"}
           </Text>
         </TouchableOpacity>
       </View>

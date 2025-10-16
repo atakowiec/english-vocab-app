@@ -20,5 +20,12 @@ export const useUserDataStore = create<UserDataStore>(set => ({
     requiredExp: 0,
     currentExp: 0
   },
+  learningStats: {
+    learnedToday: 0,
+    learnedThisWeek: 0,
+    learnedThisMonth: 0,
+    learnedThisYear: 0
+  },
+  lastPlayedMode: null,
   set
 }))

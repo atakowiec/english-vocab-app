@@ -1,6 +1,5 @@
 import { createContext, ReactNode, useContext } from "react";
-import { useUserDataStore } from "@/hooks/store/userDataStore";
-import { useGetUserDataLazyQuery } from "@/graphql/gql-generated";
+import { useAuth } from "@/context/AuthContext";
 
 type AppContextType = {
   refreshUserData: () => Promise<void>
@@ -9,23 +8,7 @@ type AppContextType = {
 const AppContext = createContext<null | AppContextType>(null);
 
 export default function AppContextProvider({ children }: { children: ReactNode }) {
-  const userDataStore = useUserDataStore()
-  const [fetchUserData] = useGetUserDataLazyQuery({fetchPolicy: "network-only"})
-
-  async function refreshUserData() {
-    const data = await fetchUserData();
-
-    if (data.error)
-      throw new Error(data.error.message)
-
-    if (!data.data?.getUserData)
-      throw new Error("User data not found")
-
-    userDataStore.set({
-      ...data.data.getUserData,
-      loaded: true
-    })
-  }
+  const { refreshUserData } = useAuth()
 
   return (
     <AppContext.Provider value={{

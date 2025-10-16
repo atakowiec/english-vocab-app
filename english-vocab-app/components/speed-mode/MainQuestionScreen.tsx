@@ -5,11 +5,15 @@ import { MaterialIcons } from "@expo/vector-icons";
 import Answers from "@/components/speed-mode/Answers";
 import { useSpeedModeData } from "@/context/SpeedModeContext";
 import { styles } from "@/styles/speed-test"
+import { ThemedView } from "@/components/theme/ThemedView";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useUserDataStore } from "@/hooks/store/userDataStore";
 
 
 export default function MainQuestionScreen() {
   const colors = useThemeColors()
   const { currentWord } = useSpeedModeData()
+  const streak = useUserDataStore(store => store.speedModeProgress.streak)
 
   return (
     <View style={[styles.box, {
@@ -17,17 +21,12 @@ export default function MainQuestionScreen() {
       zIndex: 10,
     }]}>
       <View style={styles.optionsBox}>
-        {
-          !currentWord?.wordLearnStatus.allAnsweres &&
-            <View style={[styles.optionButton, styles.newMeaning, {
-              backgroundColor: colors.background_blue_3,
-              borderColor: colors.accent_blue
-            }]}>
-                <ThemedText>
-                    New meaning
-                </ThemedText>
-            </View>
-        }
+        <ThemedView colorKey={"background_blue_3"} style={[styles.streakBox]}>
+          <Ionicons name="flame-sharp" size={26} color="#F29D38"/>
+          <ThemedText style={{ fontSize: 19 }}>
+            {streak}
+          </ThemedText>
+        </ThemedView>
         <View/>
         <TouchableOpacity style={[styles.optionButton, { backgroundColor: colors.background_blue_3 }]}
                           activeOpacity={0.8}>

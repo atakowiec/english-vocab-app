@@ -33,6 +33,13 @@ query GetUserData {
             currentExp
             requiredExp
         }
+        lastPlayedMode
+        learningStats {
+            learnedThisYear
+            learnedThisMonth
+            learnedThisWeek
+            learnedToday
+        }
         streak
         speedModeProgress {
             streak

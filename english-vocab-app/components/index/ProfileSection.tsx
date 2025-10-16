@@ -42,6 +42,7 @@ export default function ProfileSection() {
     }
 
     function onFinish() {
+      progress.value = 0
       setDisplayedLevel(prev => {
         const newDisplayedLevel = prev + 1;
         if (expData.level > newDisplayedLevel) {
@@ -55,28 +56,29 @@ export default function ProfileSection() {
     }
 
     function animateToNextLevel() {
-      progress.value = withTiming(1, {
-        duration: 600,
-        easing: Easing.linear,
-      }, (finished) => {
-        if (!finished)
-          return;
+      setTimeout(() => {
+        progress.value = withTiming(1, {
+          duration: 600,
+          easing: Easing.linear,
+        }, (finished) => {
+          if (!finished)
+            return;
 
-        progress.value = 0
-        scheduleOnRN(onFinish)
-      })
+          scheduleOnRN(onFinish)
+        })
+      }, 0)
     }
 
     function animateToCurrentLevel() {
       setDisplayedLevel(expData.level)
-      progress.value = withTiming(expData.currentExp / expData.requiredExp, {
-        duration: 600,
-        easing: Easing.inOut(Easing.ease)
-      })
+      setTimeout(() => {
+        progress.value = withTiming(expData.currentExp / expData.requiredExp, {
+          duration: 600,
+          easing: Easing.inOut(Easing.ease),
+        })
+      }, 0)
     }
-
-  }, [expData.currentExp, expData.currentExp, expData.level]);
-
+  }, [expData.currentExp, expData.requiredExp, expData.level]);
 
   const animatedProgressStyle = useAnimatedStyle(() => ({
     width: `${progress.value * 100}%`

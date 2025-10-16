@@ -6,6 +6,7 @@ import {
   useGetNextWordsLazyQuery,
   useSaveAnswersMutation
 } from "@/graphql/gql-generated";
+import { useUserDataStore } from "@/hooks/store/userDataStore";
 
 type GameStage = "counting" | "answering" | "show_answer" | "explaination_fade_in" | "swipe_next"
 type ProgressData = { target: number, duration: number }
@@ -44,17 +45,29 @@ export const SpeedModeProvider = ({ children }: { children: ReactNode }) => {
     fetchPolicy: "network-only",
   })
   const [saveAnswers] = useSaveAnswersMutation({ fetchPolicy: "network-only" })
+  const userData = useUserDataStore()
 
   const answerTime = {
     "hard": 3,
     "medium": 5,
-    "easy": 100,
+    "easy": 10,
   }[difficulty]
 
   const onProgressEnd = useCallback(() => {
     if (stage === "answering") {
       setStage("show_answer")
       setProgressData({ target: 0.0001, duration: 50 })
+
+      // if the user didn't answer, save as incorrect
+      if (savedAnswersRef.current.at(-1)?.word_id !== wordsQueue[0].word.id) {
+        savedAnswersRef.current.push({
+          word_id: wordsQueue[0].word.id,
+          correct: false,
+          date: new Date(),
+          learnMode: "SPEED_MODE"
+        })
+        updateStreak()
+      }
     }
     if (stage === "show_answer") {
       setStage("explaination_fade_in")
@@ -133,6 +146,8 @@ export const SpeedModeProvider = ({ children }: { children: ReactNode }) => {
         learnMode: "SPEED_MODE"
       })
 
+      updateStreak()
+
       return newWords
     })
 
@@ -140,6 +155,19 @@ export const SpeedModeProvider = ({ children }: { children: ReactNode }) => {
       return
     }
     sendAnswers()
+  }
+
+  const updateStreak = () => {
+    setTimeout(() => {
+      const correct = savedAnswersRef.current.at(-1)?.correct
+
+      userData.set({
+        speedModeProgress: {
+          ...userData.speedModeProgress,
+          streak: correct ? userData.speedModeProgress.streak + 1 : 0
+        }
+      })
+    })
   }
 
   const sendAnswers = async () => {

@@ -6,6 +6,9 @@ import { useSpeedModeData, WordType } from "@/context/SpeedModeContext";
 import { styles } from "@/styles/speed-test"
 import { useEffect, useRef, useState } from "react";
 import Explaination from "@/components/speed-mode/Explaination";
+import { ThemedView } from "@/components/theme/ThemedView";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useUserDataStore } from "@/hooks/store/userDataStore";
 
 const WINDOW_WIDTH = Dimensions.get("window").width;
 
@@ -20,6 +23,7 @@ export default function DummyQuestionScreen() {
   const [prevWord, setPrevWord] = useState<WordType>()
   const translateX = useRef(new Animated.Value(0)).current;
   const rotateZValue = useRef(new Animated.Value(0)).current;
+  const streak = useUserDataStore(store => store.speedModeProgress.streak)
 
   useEffect(() => {
     setPrevWord(currentWordRef.current)
@@ -63,17 +67,12 @@ export default function DummyQuestionScreen() {
       transform: [{ translateX }, { rotateZ }]
     }]}>
       <View style={styles.optionsBox}>
-        {
-          !currentWord?.wordLearnStatus.allAnsweres &&
-            <View style={[styles.optionButton, styles.newMeaning, {
-              backgroundColor: colors.background_blue_3,
-              borderColor: colors.accent_blue
-            }]}>
-                <ThemedText>
-                    New meaning
-                </ThemedText>
-            </View>
-        }
+        <ThemedView colorKey={"background_blue_3"} style={[styles.streakBox]}>
+          <Ionicons name="flame-sharp" size={26} color="#F29D38"/>
+          <ThemedText style={{ fontSize: 19 }}>
+            {streak}
+          </ThemedText>
+        </ThemedView>
         <View/>
         <TouchableOpacity style={[styles.optionButton, { backgroundColor: colors.background_blue_3 }]}
                           activeOpacity={0.8}>

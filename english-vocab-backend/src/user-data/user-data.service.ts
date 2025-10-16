@@ -9,6 +9,7 @@ import ModeProgressDto from '../learn-status/dto/mode-progress.dto';
 import WordLearnEntry from '../learn-status/dto/word-learn-entry.entity';
 import UserDataDto from '../user/dto/user-data.dto';
 import { differenceInCalendarDays } from 'date-fns';
+import LearningStatsDto from '../user/dto/learning-stats.dto';
 
 @Injectable()
 export class UserDataService {
@@ -42,9 +43,52 @@ export class UserDataService {
     return {
       userId: user.id,
       streak: await this.getUserStreak(user),
+      lastPlayedMode: await this.getLastPlayedMode(user),
+      learningStats: await this.getLearningStats(user),
       speedModeProgress: await this.getUserProgress('SPEED_MODE', user),
       expData: this.getExpData(user.exp),
     };
+  }
+
+  async getLearningStats(user: User): Promise<LearningStatsDto> {
+    const baseQuery = this.learnEntryRepository
+      .createQueryBuilder('entry')
+      .where('entry.userId = :userId', { userId: user.id })
+      .andWhere('correct = 1');
+
+    const learnedToday = await baseQuery.clone().andWhere('DATE(entry.date) = DATE(NOW())').getCount();
+
+    const learnedThisWeek = await baseQuery
+      .clone()
+      .andWhere('WEEK(entry.date) = WEEK(NOW())')
+      .andWhere('YEAR(entry.date) = YEAR(NOW())')
+      .getCount();
+
+    const learnedThisMonth = await baseQuery
+      .clone()
+      .andWhere('MONTH(entry.date) = MONTH(NOW())')
+      .andWhere('YEAR(entry.date) = YEAR(NOW())')
+      .getCount();
+
+    const learnedThisYear = await baseQuery.clone().andWhere('YEAR(entry.date) = YEAR(NOW())').getCount();
+
+    return {
+      learnedThisMonth,
+      learnedThisWeek,
+      learnedThisYear,
+      learnedToday
+    };
+  }
+
+  async getLastPlayedMode(user: User): Promise<LearnMode | null> {
+    const lastEntry = await this.learnEntryRepository.findOne({
+      where: { user: { id: user.id } },
+      order: { date: 'DESC' },
+    });
+    if (!lastEntry) {
+      return null;
+    }
+    return lastEntry.mode as LearnMode;
   }
 
   async getUserStreak(user: User): Promise<number> {
@@ -92,7 +136,7 @@ export class UserDataService {
     while (currentExp >= requiredExp) {
       level++;
       currentExp -= requiredExp;
-      requiredExp = Math.floor(requiredExp * 1.1);
+      requiredExp = Math.floor(requiredExp * 1.2);
     }
 
     return {

@@ -48,6 +48,14 @@ export type GivenAnswerInput = {
   word_id: Scalars['Float']['input'];
 };
 
+export type LearningStatsDto = {
+  __typename?: 'LearningStatsDto';
+  learnedThisMonth: Scalars['Float']['output'];
+  learnedThisWeek: Scalars['Float']['output'];
+  learnedThisYear: Scalars['Float']['output'];
+  learnedToday: Scalars['Float']['output'];
+};
+
 export type LoginInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -112,6 +120,8 @@ export type User = {
 export type UserDataDto = {
   __typename?: 'UserDataDto';
   expData: ExpDataDto;
+  lastPlayedMode?: Maybe<Scalars['String']['output']>;
+  learningStats: LearningStatsDto;
   speedModeProgress: ModeProgressDto;
   streak: Scalars['Float']['output'];
   userId: Scalars['Float']['output'];
@@ -164,7 +174,7 @@ export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'Au
 export type GetUserDataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserDataQuery = { __typename?: 'Query', getUserData: { __typename?: 'UserDataDto', streak: number, expData: { __typename?: 'ExpDataDto', level: number, currentExp: number, requiredExp: number }, speedModeProgress: { __typename?: 'ModeProgressDto', streak: number, correctAnswers: number, allAnswers: number } } };
+export type GetUserDataQuery = { __typename?: 'Query', getUserData: { __typename?: 'UserDataDto', lastPlayedMode?: string | null, streak: number, expData: { __typename?: 'ExpDataDto', level: number, currentExp: number, requiredExp: number }, learningStats: { __typename?: 'LearningStatsDto', learnedThisYear: number, learnedThisMonth: number, learnedThisWeek: number, learnedToday: number }, speedModeProgress: { __typename?: 'ModeProgressDto', streak: number, correctAnswers: number, allAnswers: number } } };
 
 export type SaveAnswersMutationVariables = Exact<{
   input: Array<GivenAnswerInput> | GivenAnswerInput;
@@ -310,6 +320,13 @@ export const GetUserDataDocument = gql`
       level
       currentExp
       requiredExp
+    }
+    lastPlayedMode
+    learningStats {
+      learnedThisYear
+      learnedThisMonth
+      learnedThisWeek
+      learnedToday
     }
     streak
     speedModeProgress {

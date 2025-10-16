@@ -23,7 +23,7 @@ export default function SpeedModeLobby() {
   const time = {
     "hard": 3,
     "medium": 5,
-    "easy": 100,
+    "easy": 10,
   }[difficulty]
 
   return (
@@ -54,7 +54,7 @@ export default function SpeedModeLobby() {
           <ThemedText style={{ fontSize: 15 }} colorKey={"text_secondary"}>
             Speed Test Mode challenges you to react quickly: you’ll be shown one word and four possible answers, but you
             have only <ThemedText style={{ fontSize: 15 }}>{time} seconds</ThemedText> to choose the correct one. If the
-            timer runs out, the question is lost—so stay sharp and make your choice fast
+            timer runs out, the question is lost - so stay sharp and make your choice fast
           </ThemedText>
         </ThemedView>
         <View style={styles.bottomButtons}>

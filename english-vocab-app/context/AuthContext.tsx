@@ -2,7 +2,7 @@ import { createContext, ReactNode, useContext, useEffect, useRef } from "react";
 import { getToken, removeToken, saveToken } from "@/utils/tokenStorage";
 import { useRouter } from "expo-router";
 import {
-  AuthPayload,
+  AuthPayload, useGetUserDataLazyQuery,
   useLoginMutation,
   User,
   useRefreshTokenLazyQuery,
@@ -10,6 +10,7 @@ import {
 } from "@/graphql/gql-generated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUserStore } from "@/hooks/store/userStore";
+import { useUserDataStore } from "@/hooks/store/userDataStore";
 
 type AuthContextPayload = {
   accessToken: string | null,
@@ -17,6 +18,7 @@ type AuthContextPayload = {
   signIn: (email: string, password: string) => Promise<undefined | AuthPayload>,
   signUp: (email: string, name: string, password: string) => Promise<boolean>,
   signOut: () => void,
+  refreshUserData: () => Promise<void>,
 }
 
 const AuthContext = createContext<AuthContextPayload | null>(null);
@@ -28,6 +30,8 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
   const [refreshToken] = useRefreshTokenLazyQuery()
   const [register] = useRegisterMutation()
   const [login] = useLoginMutation()
+  const userDataStore = useUserDataStore()
+  const [fetchUserData] = useGetUserDataLazyQuery({fetchPolicy: "network-only"})
 
   useEffect(() => {
     // noinspection JSIgnoredPromiseFromCall
@@ -43,6 +47,21 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
       }
     })()
   }, [accessToken]);
+
+  async function refreshUserData() {
+    const data = await fetchUserData();
+
+    if (data.error)
+      throw new Error(data.error.message)
+
+    if (!data.data?.getUserData)
+      throw new Error("User data not found")
+
+    userDataStore.set({
+      ...data.data.getUserData,
+      loaded: true
+    })
+  }
 
   async function handleRefreshToken() {
     const token = await getToken()
@@ -68,6 +87,7 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
       }
 
       await updateState(data)
+      await refreshUserData();
 
       router.replace('/(app)/tabs')
     } catch {
@@ -91,6 +111,7 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
     }
 
     await updateState(data)
+    await refreshUserData();
 
     return data
   }
@@ -133,6 +154,7 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
       signIn,
       signOut,
       signUp,
+      refreshUserData
     }}>
       {children}
     </AuthContext.Provider>

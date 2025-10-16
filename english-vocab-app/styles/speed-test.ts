@@ -30,7 +30,7 @@ export const styles = StyleSheet.create({
   wordBox: {
     flex: 1,
     alignItems: "center",
-    marginTop: "40%"
+    marginTop: 150
   },
   answersBox: {
     gap: 10,
@@ -52,7 +52,6 @@ export const styles = StyleSheet.create({
   },
   newMeaning: {
     paddingHorizontal: 20,
-    borderWidth: 2,
   },
   hideBoxWrapper: {
     position: "relative"
@@ -66,5 +65,14 @@ export const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderWidth: 1,
     borderColor: "red",
+  },
+  streakBox: {
+    height: 44,
+    borderRadius: 15,
+    alignItems: "center",
+    paddingHorizontal: 20,
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 10,
   },
 })

@@ -51,9 +51,18 @@ type ExpDataDto {
   requiredExp: Float!
 }
 
+type LearningStatsDto {
+  learnedToday: Float!
+  learnedThisWeek: Float!
+  learnedThisMonth: Float!
+  learnedThisYear: Float!
+}
+
 type UserDataDto {
   userId: Float!
   streak: Float!
+  lastPlayedMode: String
+  learningStats: LearningStatsDto!
   expData: ExpDataDto!
   speedModeProgress: ModeProgressDto!
 }
