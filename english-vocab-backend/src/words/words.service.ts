@@ -55,12 +55,16 @@ export class WordsService {
   }
 
   async getWordOfTheDay() {
-    const dayOfTheCentury = Math.floor(Date.now() / 86400000);
+    const now = new Date();
+    const localMillis = now.getTime() - now.getTimezoneOffset() * 60_000;
+    const dayOfTheCentury = Math.floor(localMillis / 86_400_000) * 69;
+
+    const all = await this.repository.count();
 
     const word = await this.repository
       .createQueryBuilder('word')
       .orderBy('word.id')
-      .offset(dayOfTheCentury % (await this.repository.count()))
+      .offset(dayOfTheCentury % all)
       .limit(1)
       .getOne();
 
