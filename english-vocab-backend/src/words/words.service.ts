@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import GameWord from './game-word.dto';
 import { User } from '../user/user.entity';
+import { WordReport } from './word-report.entity';
 
 @Injectable()
 export class WordsService {
@@ -11,6 +12,8 @@ export class WordsService {
   constructor(
     @InjectRepository(WordEntity)
     private readonly repository: Repository<WordEntity>,
+    @InjectRepository(WordReport)
+    private readonly reportRepository: Repository<WordReport>,
   ) {
     // empty
   }
@@ -74,6 +77,7 @@ export class WordsService {
       .createQueryBuilder('word')
       .leftJoinAndSelect('word.learnStatuses', 'learnStatus', 'learnStatus.userId = :userId', { userId: user.id })
       .where('CHAR_LENGTH(word.word_en) < 20')
+      .andWhere('word.banned = false')
       .select()
       .orderBy('RAND()')
       .limit(20)
@@ -99,7 +103,7 @@ export class WordsService {
     return result;
   }
 
-  private getLearnStatus(word: WordEntity): { allAnsweres: number; correctAnswers: number; incorrectAnswers: number } {
+  private getLearnStatus(word: WordEntity): { allAnswers: number; correctAnswers: number; incorrectAnswers: number } {
     const entries = (word as any)?.learnStatuses ?? [];
     let correct = 0;
     for (const entry of entries) {
@@ -107,9 +111,25 @@ export class WordsService {
     }
     const all = entries.length;
     return {
-      allAnsweres: all,
+      allAnswers: all,
       correctAnswers: correct,
       incorrectAnswers: all - correct,
     };
+  }
+
+  async saveWordReport(wordId: number, reason: string, user: User) {
+    this.logger.log(`Saving word report for word ${wordId} by user ${user.id}`);
+
+    const word = await this.repository.findOne({ where: { id: wordId } });
+    if (!word) {
+      this.logger.warn(`Word with id ${wordId} not found`);
+      return; // we don't need to tell the user that the word doesn't exist
+    }
+
+    // Use a transaction to ensure both operations succeed or fail together
+    await this.repository.manager.transaction(async (transactionalEntityManager) => {
+      await transactionalEntityManager.save(WordReport, { word, user, reason });
+      await transactionalEntityManager.update(WordEntity, { id: wordId }, { banned: true });
+    });
   }
 }

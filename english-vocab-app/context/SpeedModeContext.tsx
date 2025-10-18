@@ -4,9 +4,12 @@ import {
   GetNextWordsQuery,
   GivenAnswerInput,
   useGetNextWordsLazyQuery,
+  useReportWordMutation,
   useSaveAnswersMutation
 } from "@/graphql/gql-generated";
 import { useUserDataStore } from "@/hooks/store/userDataStore";
+import ReportModal from "@/components/speed-mode/ReportModal";
+import Toast from "react-native-toast-message";
 
 type GameStage = "counting" | "answering" | "show_answer" | "explaination_fade_in" | "swipe_next"
 type ProgressData = { target: number, duration: number, stopped?: boolean }
@@ -29,6 +32,7 @@ type SpeedModeContextData = {
   nextWord: WordType | undefined;
   progressCallback: () => void;
   onAnswerClick: (answer: string) => void;
+  showReportModal: () => void;
 }
 
 const SpeedModeContext = createContext<SpeedModeContextData | null>(null)
@@ -49,6 +53,9 @@ export const SpeedModeProvider = ({ children }: { children: ReactNode }) => {
   })
   const [saveAnswers] = useSaveAnswersMutation({ fetchPolicy: "network-only" })
   const userData = useUserDataStore()
+
+  const [reportWord] = useReportWordMutation()
+  const [reportVisible, setReportVisible] = useState(false)
 
   const answerTime = {
     "hard": 3,
@@ -184,6 +191,48 @@ export const SpeedModeProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  function showReportModal() {
+    setReportVisible(true)
+    setProgressData(prevState => ({
+      ...prevState,
+      stopped: true
+    }))
+  }
+
+  function onReportModalClose() {
+    setReportVisible(false)
+    setStage("swipe_next")
+    nextWord()
+    setProgressData({ target: 0.9999, duration: 500 })
+  }
+
+  async function onReportModalSubmit(reason: string) {
+    const word = wordsQueue[0]
+
+    if (!word?.word?.id) {
+      return Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No word to report",
+        visibilityTime: 2000,
+      })
+    }
+
+    await reportWord({
+      variables: {
+        wordId: word.word.id,
+        reason
+      }
+    })
+
+    Toast.show({
+      type: "info",
+      text1: "Report submitted successfully",
+      text2: "Thank you for your feedback!",
+      visibilityTime: 2000,
+    })
+  }
+
   return (
     <SpeedModeContext.Provider value={{
       answerTime,
@@ -196,7 +245,12 @@ export const SpeedModeProvider = ({ children }: { children: ReactNode }) => {
       nextWord: wordsQueue[1],
       progressCallback: onProgressEnd,
       onAnswerClick,
+      showReportModal
     }}>
+      <ReportModal isVisible={reportVisible}
+                   onClose={onReportModalClose}
+                   onSubmit={onReportModalSubmit}
+                   setVisible={setReportVisible}/>
       {children}
     </SpeedModeContext.Provider>
   )

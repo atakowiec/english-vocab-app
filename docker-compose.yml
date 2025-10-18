@@ -8,6 +8,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_DATABASE: english_vocab_app
+      TZ: Europe/Warsaw
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:

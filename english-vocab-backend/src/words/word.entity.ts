@@ -41,6 +41,10 @@ export default class WordEntity {
   @Field(() => [String])
   other_forms: string[] = [];
 
+    @Column('boolean', { default: false })
+  @Field({ nullable: true })
+  banned?: boolean;
+
   @OneToMany(() => WordLearnEntry, (status) => status.word)
   learnStatuses: WordLearnEntry[];
 }

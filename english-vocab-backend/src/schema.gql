@@ -12,6 +12,7 @@ type WordEntity {
   tags: [String!]!
   examples: [String!]!
   other_forms: [String!]!
+  banned: Boolean
 }
 
 type User {
@@ -27,7 +28,7 @@ type AuthPayload {
 }
 
 type WordLearnStatusDto {
-  allAnsweres: Float!
+  allAnswers: Float!
   correctAnswers: Float!
   incorrectAnswers: Float!
 }
@@ -78,6 +79,7 @@ type Query {
 type Mutation {
   register(input: RegisterInput!): Boolean!
   login(input: LoginInput!): AuthPayload!
+  saveWordReport(wordId: Float!, reason: String!): Boolean!
   saveAnswers(input: [GivenAnswerInput!]!): Boolean!
 }
 

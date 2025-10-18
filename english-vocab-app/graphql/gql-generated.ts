@@ -73,6 +73,7 @@ export type Mutation = {
   login: AuthPayload;
   register: Scalars['Boolean']['output'];
   saveAnswers: Scalars['Boolean']['output'];
+  saveWordReport: Scalars['Boolean']['output'];
 };
 
 
@@ -88,6 +89,12 @@ export type MutationRegisterArgs = {
 
 export type MutationSaveAnswersArgs = {
   input: Array<GivenAnswerInput>;
+};
+
+
+export type MutationSaveWordReportArgs = {
+  reason: Scalars['String']['input'];
+  wordId: Scalars['Float']['input'];
 };
 
 export type Query = {
@@ -147,7 +154,7 @@ export type WordEntity = {
 
 export type WordLearnStatusDto = {
   __typename?: 'WordLearnStatusDto';
-  allAnsweres: Scalars['Float']['output'];
+  allAnswers: Scalars['Float']['output'];
   correctAnswers: Scalars['Float']['output'];
   incorrectAnswers: Scalars['Float']['output'];
 };
@@ -193,12 +200,20 @@ export type GetNextWordsQueryVariables = Exact<{
 }>;
 
 
-export type GetNextWordsQuery = { __typename?: 'Query', getNextWords: Array<{ __typename?: 'GameWord', similarEnWords: Array<string>, similarPlWords: Array<string>, word: { __typename?: 'WordEntity', id: number, definition_en?: string | null, word_en: string, word_pl: string, examples: Array<string>, type?: string | null, base_word_en?: string | null, other_forms: Array<string>, tags: Array<string> }, wordLearnStatus: { __typename?: 'WordLearnStatusDto', allAnsweres: number, correctAnswers: number, incorrectAnswers: number } }> };
+export type GetNextWordsQuery = { __typename?: 'Query', getNextWords: Array<{ __typename?: 'GameWord', similarEnWords: Array<string>, similarPlWords: Array<string>, word: { __typename?: 'WordEntity', id: number, definition_en?: string | null, word_en: string, word_pl: string, examples: Array<string>, type?: string | null, base_word_en?: string | null, other_forms: Array<string>, tags: Array<string> }, wordLearnStatus: { __typename?: 'WordLearnStatusDto', allAnswers: number, correctAnswers: number, incorrectAnswers: number } }> };
 
 export type WordOfTheDayQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type WordOfTheDayQuery = { __typename?: 'Query', wordOfTheDay: { __typename?: 'WordEntity', word_en: string, word_pl: string, type?: string | null, definition_en?: string | null, examples: Array<string> } };
+
+export type ReportWordMutationVariables = Exact<{
+  wordId: Scalars['Float']['input'];
+  reason: Scalars['String']['input'];
+}>;
+
+
+export type ReportWordMutation = { __typename?: 'Mutation', saveWordReport: boolean };
 
 
 export const RefreshTokenDocument = gql`
@@ -424,7 +439,7 @@ export const GetNextWordsDocument = gql`
     similarEnWords
     similarPlWords
     wordLearnStatus {
-      allAnsweres
+      allAnswers
       correctAnswers
       incorrectAnswers
     }
@@ -507,3 +522,35 @@ export type WordOfTheDayQueryHookResult = ReturnType<typeof useWordOfTheDayQuery
 export type WordOfTheDayLazyQueryHookResult = ReturnType<typeof useWordOfTheDayLazyQuery>;
 export type WordOfTheDaySuspenseQueryHookResult = ReturnType<typeof useWordOfTheDaySuspenseQuery>;
 export type WordOfTheDayQueryResult = Apollo.QueryResult<WordOfTheDayQuery, WordOfTheDayQueryVariables>;
+export const ReportWordDocument = gql`
+    mutation reportWord($wordId: Float!, $reason: String!) {
+  saveWordReport(wordId: $wordId, reason: $reason)
+}
+    `;
+export type ReportWordMutationFn = Apollo.MutationFunction<ReportWordMutation, ReportWordMutationVariables>;
+
+/**
+ * __useReportWordMutation__
+ *
+ * To run a mutation, you first call `useReportWordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReportWordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [reportWordMutation, { data, loading, error }] = useReportWordMutation({
+ *   variables: {
+ *      wordId: // value for 'wordId'
+ *      reason: // value for 'reason'
+ *   },
+ * });
+ */
+export function useReportWordMutation(baseOptions?: Apollo.MutationHookOptions<ReportWordMutation, ReportWordMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ReportWordMutation, ReportWordMutationVariables>(ReportWordDocument, options);
+      }
+export type ReportWordMutationHookResult = ReturnType<typeof useReportWordMutation>;
+export type ReportWordMutationResult = Apollo.MutationResult<ReportWordMutation>;
+export type ReportWordMutationOptions = Apollo.BaseMutationOptions<ReportWordMutation, ReportWordMutationVariables>;

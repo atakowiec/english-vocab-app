@@ -13,7 +13,7 @@ import { useEffect, useRef } from "react";
 
 export default function MainQuestionScreen() {
   const colors = useThemeColors()
-  const { currentWord, setProgressData, progressData, stage } = useSpeedModeData()
+  const { currentWord, setProgressData, progressData, stage, showReportModal } = useSpeedModeData()
   const streak = useUserDataStore(store => store.speedModeProgress.streak)
   const canPause = stage === "explaination_fade_in"
   const showAnswersTime = useRef(0) // this stores the time when the answers have been shown
@@ -64,6 +64,7 @@ export default function MainQuestionScreen() {
               <MaterialIcons name={progressData.stopped ? "play-arrow" : "pause"} size={24} color="white"/>
           </TouchableOpacity>}
           <TouchableOpacity style={[styles.optionButton, { backgroundColor: colors.background_blue_3 }]}
+                            onPress={showReportModal}
                             activeOpacity={0.8}>
             <MaterialIcons name="report" size={24} color="white"/>
           </TouchableOpacity>

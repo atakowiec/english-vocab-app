@@ -1,4 +1,4 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import WordEntity from './word.entity';
 import { WordsService } from './words.service';
 import GameWord from './game-word.dto';
@@ -22,5 +22,17 @@ export class WordsResolver {
   @UseGuards(GqlAuthGuard)
   async getNextWords(@Args('mode') mode: LearnMode, @CurrentUser() user: User): Promise<GameWord[]> {
     return await this.wordsService.getNextWords(mode, user);
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(GqlAuthGuard)
+  async saveWordReport(
+    @Args('wordId') wordId: number,
+    @Args('reason') reason: string,
+    @CurrentUser() user: User,
+  ): Promise<boolean> {
+    await this.wordsService.saveWordReport(wordId, reason, user);
+
+    return true;
   }
 }

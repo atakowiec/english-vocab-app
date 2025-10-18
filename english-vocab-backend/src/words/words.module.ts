@@ -3,9 +3,10 @@ import { WordsService } from './words.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WordsResolver } from './words.resolver';
 import WordEntity from './word.entity';
+import { WordReport } from './word-report.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([WordEntity])],
+  imports: [TypeOrmModule.forFeature([WordEntity, WordReport])],
   providers: [WordsService, WordsResolver],
   exports: [WordsService],
 })

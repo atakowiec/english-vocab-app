@@ -14,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LearnStatusModule } from './learn-status/learn-status.module';
 import { UserDataModule } from './user-data/user-data.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { WordReport } from './words/word-report.entity';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       username: 'user',
       password: 'password',
       database: 'english_vocab_app',
-      entities: [User, WordStatus, WordEntity, WordLearnEntry],
+      entities: [User, WordStatus, WordEntity, WordLearnEntry, WordReport],
       synchronize: true,
     }),
     ConfigModule.forRoot({

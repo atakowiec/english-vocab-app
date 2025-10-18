@@ -3,7 +3,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 @ObjectType()
 export default class WordLearnStatusDto {
   @Field()
-  allAnsweres: number;
+  allAnswers: number;
 
   @Field()
   correctAnswers: number;

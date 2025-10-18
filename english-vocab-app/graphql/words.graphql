@@ -7,3 +7,7 @@ query wordOfTheDay {
         examples
     }
 }
+
+mutation reportWord($wordId: Float!, $reason: String!) {
+    saveWordReport(wordId: $wordId, reason: $reason)
+}

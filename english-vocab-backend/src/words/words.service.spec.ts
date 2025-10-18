@@ -3,6 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import WordEntity from './word.entity';
 import { WordsService } from './words.service';
+import { WordReport } from './word-report.entity';
 
 describe('WordsService', () => {
   let service: WordsService;
@@ -22,6 +23,10 @@ describe('WordsService', () => {
         {
           provide: getRepositoryToken(WordEntity),
           useValue: repositoryMock,
+        },
+        {
+          provide: getRepositoryToken(WordReport),
+          useValue: {},
         },
       ],
     }).compile();
@@ -78,7 +83,11 @@ describe('WordsService', () => {
     } as WordEntity;
 
     const qb = mockQb();
-    const expected: WordEntity[] = [{ ...(word as any), id: 2 } as any, { ...(word as any), id: 3 } as any, { ...(word as any), id: 4 } as any];
+    const expected: WordEntity[] = [
+      { ...(word as any), id: 2 } as any,
+      { ...(word as any), id: 3 } as any,
+      { ...(word as any), id: 4 } as any,
+    ];
     qb.getMany.mockResolvedValue(expected);
 
     const result = await service.findSimilarEnWords(word);
