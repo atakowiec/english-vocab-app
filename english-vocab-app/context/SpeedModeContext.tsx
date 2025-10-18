@@ -43,6 +43,9 @@ export const SpeedModeProvider = ({ children }: { children: ReactNode }) => {
   const [wordsQueue, setWordsQueue] = useState<WordType[]>([])
   const [fetchWordsQuery] = useGetNextWordsLazyQuery({
     fetchPolicy: "network-only",
+    variables: {
+      mode: "SPEED_MODE",
+    }
   })
   const [saveAnswers] = useSaveAnswersMutation({ fetchPolicy: "network-only" })
   const userData = useUserDataStore()

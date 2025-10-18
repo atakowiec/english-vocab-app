@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import WordEntity from './word.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import GameWord from './game-word.dto';
+import { User } from '../user/user.entity';
 
 @Injectable()
 export class WordsService {
+  private readonly logger = new Logger(WordsService.name);
   constructor(
     @InjectRepository(WordEntity)
     private readonly repository: Repository<WordEntity>,
@@ -63,5 +66,50 @@ export class WordsService {
     }
 
     return word;
+  }
+
+  async getNextWords(_learnMode: LearnMode, user: User): Promise<GameWord[]> {
+    this.logger.log(`Generating next words for user ${user.id}`);
+    const randomWords = await this.repository
+      .createQueryBuilder('word')
+      .leftJoinAndSelect('word.learnStatuses', 'learnStatus', 'learnStatus.userId = :userId', { userId: user.id })
+      .where('CHAR_LENGTH(word.word_en) < 20')
+      .select()
+      .orderBy('RAND()')
+      .limit(20)
+      .getMany();
+
+    this.logger.debug(`Fetched ${randomWords.length} random words for user ${user.id}`);
+
+    const result: GameWord[] = [];
+
+    for (const word of randomWords) {
+      const similarWords = await this.findSimilarEnWords(word);
+      const similarPlWords = await this.findSimilarPlWords(word);
+
+      result.push({
+        word,
+        similarEnWords: similarWords.map((w) => w.word_en),
+        similarPlWords: similarPlWords.map((w) => w.word_pl),
+        wordLearnStatus: this.getLearnStatus(word),
+      });
+    }
+
+    this.logger.log(`Prepared ${result.length} game words for user ${user.id}`);
+    return result;
+  }
+
+  private getLearnStatus(word: WordEntity): { allAnsweres: number; correctAnswers: number; incorrectAnswers: number } {
+    const entries = (word as any)?.learnStatuses ?? [];
+    let correct = 0;
+    for (const entry of entries) {
+      if (entry?.correct) correct += 1;
+    }
+    const all = entries.length;
+    return {
+      allAnsweres: all,
+      correctAnswers: correct,
+      incorrectAnswers: all - correct,
+    };
   }
 }

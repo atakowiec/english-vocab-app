@@ -71,7 +71,7 @@ type Query {
   hello: String!
   refreshToken(refreshToken: String!): AuthPayload!
   wordOfTheDay: WordEntity!
-  getNextWords: [GameWord!]!
+  getNextWords(mode: String!): [GameWord!]!
   getUserData: UserDataDto!
 }
 

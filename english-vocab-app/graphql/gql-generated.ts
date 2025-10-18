@@ -100,6 +100,11 @@ export type Query = {
 };
 
 
+export type QueryGetNextWordsArgs = {
+  mode: Scalars['String']['input'];
+};
+
+
 export type QueryRefreshTokenArgs = {
   refreshToken: Scalars['String']['input'];
 };
@@ -183,7 +188,9 @@ export type SaveAnswersMutationVariables = Exact<{
 
 export type SaveAnswersMutation = { __typename?: 'Mutation', saveAnswers: boolean };
 
-export type GetNextWordsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetNextWordsQueryVariables = Exact<{
+  mode: Scalars['String']['input'];
+}>;
 
 
 export type GetNextWordsQuery = { __typename?: 'Query', getNextWords: Array<{ __typename?: 'GameWord', similarEnWords: Array<string>, similarPlWords: Array<string>, word: { __typename?: 'WordEntity', id: number, definition_en?: string | null, word_en: string, word_pl: string, examples: Array<string>, type?: string | null, base_word_en?: string | null, other_forms: Array<string>, tags: Array<string> }, wordLearnStatus: { __typename?: 'WordLearnStatusDto', allAnsweres: number, correctAnswers: number, incorrectAnswers: number } }> };
@@ -401,8 +408,8 @@ export type SaveAnswersMutationHookResult = ReturnType<typeof useSaveAnswersMuta
 export type SaveAnswersMutationResult = Apollo.MutationResult<SaveAnswersMutation>;
 export type SaveAnswersMutationOptions = Apollo.BaseMutationOptions<SaveAnswersMutation, SaveAnswersMutationVariables>;
 export const GetNextWordsDocument = gql`
-    query getNextWords {
-  getNextWords {
+    query getNextWords($mode: String!) {
+  getNextWords(mode: $mode) {
     word {
       id
       definition_en
@@ -437,10 +444,11 @@ export const GetNextWordsDocument = gql`
  * @example
  * const { data, loading, error } = useGetNextWordsQuery({
  *   variables: {
+ *      mode: // value for 'mode'
  *   },
  * });
  */
-export function useGetNextWordsQuery(baseOptions?: Apollo.QueryHookOptions<GetNextWordsQuery, GetNextWordsQueryVariables>) {
+export function useGetNextWordsQuery(baseOptions: Apollo.QueryHookOptions<GetNextWordsQuery, GetNextWordsQueryVariables> & ({ variables: GetNextWordsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetNextWordsQuery, GetNextWordsQueryVariables>(GetNextWordsDocument, options);
       }

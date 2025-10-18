@@ -7,7 +7,6 @@ import { User } from './user/user.entity';
 import { ApolloDriver } from '@nestjs/apollo';
 import { ScrapperModule } from './scrapper/scrapper.module';
 import { WordsModule } from './words/words.module';
-import { SpeedModeModule } from './speed-mode/speed-mode.module';
 import WordStatus from './scrapper/word-status.entity';
 import WordEntity from './words/word.entity';
 import WordLearnEntry from './learn-status/dto/word-learn-entry.entity';
@@ -41,7 +40,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     AuthModule,
     ScrapperModule,
     WordsModule,
-    SpeedModeModule,
     LearnStatusModule,
     UserDataModule,
   ],

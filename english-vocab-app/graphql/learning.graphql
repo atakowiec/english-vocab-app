@@ -2,8 +2,8 @@ mutation saveAnswers($input: [GivenAnswerInput!]!) {
     saveAnswers(input: $input)
 }
 
-query getNextWords {
-    getNextWords {
+query getNextWords($mode: String!) {
+    getNextWords(mode: $mode) {
         word {
             id
             definition_en
