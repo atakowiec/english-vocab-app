@@ -47,6 +47,7 @@ export default function SpeedMode() {
                        height={height - 50}
                        style={styles.borderProgress}
                        callback={progressCallback}
+                       running={!progressData.stopped}
                        duration={progressData.duration}/>
       {started && <MainQuestionScreen/>}
       {started && <DummyQuestionScreen/>}

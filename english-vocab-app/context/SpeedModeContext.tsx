@@ -9,7 +9,7 @@ import {
 import { useUserDataStore } from "@/hooks/store/userDataStore";
 
 type GameStage = "counting" | "answering" | "show_answer" | "explaination_fade_in" | "swipe_next"
-type ProgressData = { target: number, duration: number }
+type ProgressData = { target: number, duration: number, stopped?: boolean }
 
 export type WordType = GetNextWordsQuery["getNextWords"][0] & {
   answers: string[]
@@ -23,7 +23,7 @@ type SpeedModeContextData = {
   stage: GameStage;
   setStage: (stage: GameStage) => void;
   progressData: ProgressData;
-  setProgressData: (data: ProgressData) => void;
+  setProgressData: (data: ProgressData | ((data: ProgressData) => ProgressData)) => void;
   started: boolean;
   currentWord: WordType | undefined;
   nextWord: WordType | undefined;

@@ -27,7 +27,7 @@ export default function RectProgressBar({
                                           callback
                                         }: RectProgressProps) {
   const colors = useThemeColors()
-  const color = colors.accent_blue
+  const color = running ? colors.accent_blue : colors.text_secondary
   const backgroundColor = colors.background_blue_3
   const strokeWidth = 15;
 
@@ -77,7 +77,7 @@ export default function RectProgressBar({
       // noinspection SillyAssignmentJS
       animatedProgress.value = animatedProgress.value;
     }
-  }, [targetProgress, duration])
+  }, [targetProgress, duration, running])
 
   // Animated strokeDasharray
   const animatedProps = useAnimatedProps(() => {
