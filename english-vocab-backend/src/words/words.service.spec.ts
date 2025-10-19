@@ -148,18 +148,26 @@ describe('WordsService', () => {
     const word: WordEntity = { id: 7 } as any;
     qb.getOne.mockResolvedValue(word);
 
-    const spyDateNow = jest.spyOn(Date, 'now').mockReturnValue(86400000 * 3.5); // 3 days
+    // Freeze time to a known instant; service uses new Date() and local timezone adjustment
+    jest.useFakeTimers().setSystemTime(new Date('2025-01-04T12:00:00.000Z'));
 
     const result = await service.getWordOfTheDay();
 
     expect(repository.createQueryBuilder).toHaveBeenCalledWith('word');
     expect(qb.orderBy).toHaveBeenCalledWith('word.id');
-    expect(qb.offset).toHaveBeenCalledWith(3 % 10);
+
+    // Compute expected offset the same way as the service
+    const now = new Date();
+    const localMillis = now.getTime() - now.getTimezoneOffset() * 60_000;
+    const dayOfTheCentury = Math.floor(localMillis / 86_400_000) * 69;
+    const expectedOffset = dayOfTheCentury % 10;
+    expect(qb.offset).toHaveBeenCalledWith(expectedOffset);
+
     expect(qb.limit).toHaveBeenCalledWith(1);
     expect(qb.getOne).toHaveBeenCalled();
     expect(result).toBe(word);
 
-    spyDateNow.mockRestore();
+    jest.useRealTimers();
   });
 
   it('getWordOfTheDay() should throw when repository returns no word', async () => {
