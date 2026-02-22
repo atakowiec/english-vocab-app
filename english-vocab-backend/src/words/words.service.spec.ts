@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import WordEntity from './word.entity';
+import WordEntity from './dto/word.entity';
 import { WordsService } from './words.service';
-import { WordReport } from './word-report.entity';
+import { WordReport } from './dto/word-report.entity';
 
 describe('WordsService', () => {
   let service: WordsService;
@@ -49,10 +49,10 @@ describe('WordsService', () => {
       tags: [],
       examples: [],
       other_forms: [],
-      learnStatuses: [],
+      learnEntries: [],
     };
 
-    const saved: WordEntity = { id: 1, ...word, learnStatuses: undefined } as any;
+    const saved: WordEntity = { id: 1, ...word, learnEntries: undefined } as any;
     repository.save.mockResolvedValue(saved);
 
     await expect(service.save(word)).resolves.toBe(saved);

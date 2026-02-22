@@ -1,6 +1,6 @@
 import { Controller, Param, Post, Logger } from '@nestjs/common';
 import { ScrapperService } from './scrapper.service';
-import WordEntity from '../words/word.entity';
+import WordEntity from '../words/dto/word.entity';
 
 @Controller('scrapper')
 export class ScrapperController {

@@ -1,6 +1,6 @@
 import  {GraphQLFormattedError as BaseGraphQLFormattedError} from "graphql";
 
-declare module "*.png"
+declare module "*.png";
 
 type GraphQLFormattedErrorExtensions = {
   code: string;

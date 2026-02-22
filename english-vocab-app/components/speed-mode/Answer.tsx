@@ -14,7 +14,7 @@ type Props = {
 
 export default function Answer({ answer, parentLayoutData: parent }: Props) {
   const colors = useThemeColors();
-  const { onAnswerClick, currentWord, stage } = useSpeedModeData();
+  const { currentWord, stage, setProgressData, wordsQueue, registerAnswers } = useSpeedModeData();
   const [layoutData, setLayoutData] = useState<LayoutData>({ height: 0, y: 0 });
 
   const animation = useRef(new Animated.Value(0)).current;
@@ -46,6 +46,17 @@ export default function Answer({ answer, parentLayoutData: parent }: Props) {
       });
     }
   }, [stage]);
+
+  const onAnswerClick = (answer: string) => {
+    if (stage !== "answering" || wordsQueue[0].selectedAnswer) {
+      return
+    }
+
+    setProgressData({target: 0.0001, duration: 500})
+    registerAnswers({
+      [wordsQueue[0].word.id]: answer
+    })
+  }
 
   const targetY = parent.height - layoutData.height - layoutData.y + parent.y - 160;
 

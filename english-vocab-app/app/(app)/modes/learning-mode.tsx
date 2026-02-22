@@ -1,15 +1,10 @@
-import { ThemedText } from "@/components/theme/ThemedText";
-import AppContainer from "@/components/index/AppContainer";
+import {LearningMode} from "@/components/learning-mode/LearningMode";
+import LearningModeContextProvider from "@/context/LearningModeContext";
 
 export default function LearningModeScreen() {
   return (
-    <AppContainer>
-      <ThemedText type={"title"}>
-        Learning Mode
-      </ThemedText>
-      <ThemedText type={"default"} colorKey={"text_secondary"}>
-        Here will be the Learning Mode screen.
-      </ThemedText>
-    </AppContainer>
+    <LearningModeContextProvider>
+      <LearningMode/>
+    </LearningModeContextProvider>
   );
 }

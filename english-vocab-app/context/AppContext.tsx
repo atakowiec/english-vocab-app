@@ -1,20 +1,25 @@
-import { createContext, ReactNode, useContext } from "react";
-import { useAuth } from "@/context/AuthContext";
+import {createContext, ReactNode, useContext, useState} from "react";
+import {useAuth} from "@/context/AuthContext";
+import LoadingModal from "@/components/LoadingModal";
 
 type AppContextType = {
-  refreshUserData: () => Promise<void>
+  refreshUserData: () => Promise<void>,
+  setLoadingVisible: (visible: boolean) => void
 }
 
 const AppContext = createContext<null | AppContextType>(null);
 
-export default function AppContextProvider({ children }: { children: ReactNode }) {
-  const { refreshUserData } = useAuth()
+export default function AppContextProvider({children}: { children: ReactNode }) {
+  const [loadingVisible, setLoadingVisible] = useState<boolean>(false)
+  const {refreshUserData} = useAuth()
 
   return (
     <AppContext.Provider value={{
-      refreshUserData
+      refreshUserData,
+      setLoadingVisible
     }}>
       {children}
+      {loadingVisible && <LoadingModal/>}
     </AppContext.Provider>
   )
 }

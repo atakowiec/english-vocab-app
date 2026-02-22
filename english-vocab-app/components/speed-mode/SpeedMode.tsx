@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react";
-import { useSpeedModeData } from "@/context/SpeedModeContext";
-import { ThemedView } from "@/components/theme/ThemedView";
+import {useEffect, useState} from "react";
+import {useSpeedModeData} from "@/context/SpeedModeContext";
+import {ThemedView} from "@/components/theme/ThemedView";
 import RectProgressBar from "@/components/RectProgressBar";
-import { Dimensions } from "react-native";
+import {Dimensions} from "react-native";
 import MainQuestionScreen from "@/components/speed-mode/MainQuestionScreen";
 import CountdownScreen from "@/components/speed-mode/CountdownScreen";
 import DummyQuestionScreen from "@/components/speed-mode/DummyQuestionScreen";
-import { styles } from "@/styles/speed-test"
+import {styles} from "@/styles/speed-test"
 
-const { height, width } = Dimensions.get("window");
+const {height, width} = Dimensions.get("window");
 
 export default function SpeedMode() {
   const [countdown, setCountdown] = useState(5);
-  const { setProgressData, progressData, started, setStage, progressCallback, answerTime } = useSpeedModeData()
+  const {setProgressData, progressData, stage, setStage, progressCallback, answerTime} = useSpeedModeData()
+  const started = stage !== "counting"
 
   useEffect(() => {
     if (countdown === 0) {
@@ -24,7 +25,7 @@ export default function SpeedMode() {
 
     if (countdown === -1) {
       setStage("answering")
-      setProgressData({ target: 0, duration: answerTime * 1000 })
+      setProgressData({target: 0, duration: answerTime * 1000})
       return;
     }
 
@@ -37,11 +38,11 @@ export default function SpeedMode() {
 
   function skipCountdown() {
     setCountdown(0)
-    setProgressData({ target: 0, duration: 0 })
+    setProgressData({target: 0, duration: 0})
   }
 
   return (
-    <ThemedView style={{ flex: 1 }}>
+    <ThemedView style={{flex: 1}}>
       <RectProgressBar targetProgress={progressData.target}
                        width={width - 20}
                        height={height - 50}

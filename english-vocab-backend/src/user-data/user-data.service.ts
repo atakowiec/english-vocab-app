@@ -6,18 +6,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import ExpDataDto from '../user/dto/exp-data.dto';
 import ModeProgressDto from '../learn-status/dto/mode-progress.dto';
-import WordLearnEntry from '../learn-status/dto/word-learn-entry.entity';
+import LearnEntry from '../learn-status/entity/learn-entry.entity';
 import UserDataDto from '../user/dto/user-data.dto';
 import { differenceInCalendarDays } from 'date-fns';
 import LearningStatsDto from '../user/dto/learning-stats.dto';
+import { LearningMode } from '../app.types';
 
 @Injectable()
 export class UserDataService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(WordLearnEntry)
-    private readonly learnEntryRepository: Repository<WordLearnEntry>,
+    @InjectRepository(LearnEntry)
+    private readonly learnEntryRepository: Repository<LearnEntry>,
   ) {
     // empty
   }
@@ -45,15 +46,17 @@ export class UserDataService {
       streak: await this.getUserStreak(user),
       lastPlayedMode: await this.getLastPlayedMode(user),
       learningStats: await this.getLearningStats(user),
-      speedModeProgress: await this.getUserProgress('SPEED_MODE', user),
+      speedModeProgress: await this.getUserProgress(LearningMode.SPEED_TEST, user),
       expData: this.getExpData(user.exp),
     };
   }
 
   async getLearningStats(user: User): Promise<LearningStatsDto> {
+    // todo some day we'll add redis cache here
     const baseQuery = this.learnEntryRepository
       .createQueryBuilder('entry')
-      .where('entry.userId = :userId', { userId: user.id })
+      .innerJoin('entry.session', 'session')
+      .where('session.userId = :userId', { userId: user.id })
       .andWhere('correct = 1');
 
     const learnedToday = await baseQuery.clone().andWhere('DATE(entry.date) = DATE(NOW())').getCount();
@@ -76,19 +79,21 @@ export class UserDataService {
       learnedThisMonth,
       learnedThisWeek,
       learnedThisYear,
-      learnedToday
+      learnedToday,
     };
   }
 
-  async getLastPlayedMode(user: User): Promise<LearnMode | null> {
+  async getLastPlayedMode(user: User): Promise<LearningMode | null> {
+    // todo check
     const lastEntry = await this.learnEntryRepository.findOne({
-      where: { user: { id: user.id } },
+      where: { session: { user } },
       order: { date: 'DESC' },
     });
+
     if (!lastEntry) {
       return null;
     }
-    return lastEntry.mode as LearnMode;
+    return lastEntry.session.mode as LearningMode;
   }
 
   async getUserStreak(user: User): Promise<number> {
@@ -96,7 +101,8 @@ export class UserDataService {
     const rawDates = await this.learnEntryRepository
       .createQueryBuilder('entry')
       .select('DATE(entry.date)', 'date') // convert timestamp → date
-      .where('entry.userId = :userId', { userId: user.id })
+      .innerJoin('entry.session', 'session')
+      .where('session.userId = :userId', { userId: user.id })
       .orderBy('date', 'DESC')
       .getRawMany<{ date: string }>();
 
@@ -146,11 +152,10 @@ export class UserDataService {
     };
   }
 
-  async getUserProgress(learnMode: LearnMode, user: User): Promise<ModeProgressDto> {
+  async getUserProgress(learnMode: LearningMode, user: User): Promise<ModeProgressDto> {
     const allAnswers = await this.learnEntryRepository.find({
       where: {
-        user: { id: user.id },
-        mode: learnMode,
+        session: { user, mode: learnMode },
       },
     });
 
@@ -161,14 +166,13 @@ export class UserDataService {
     };
   }
 
-  async getStreak(learnMode: LearnMode, user: User): Promise<number> {
+  async getStreak(learnMode: LearningMode, user: User): Promise<number> {
     // Note: Do not limit selected columns when ordering by other fields.
     // TypeORM on MySQL may generate a DISTINCT subquery that expects id/date
     // to be present; selecting only 'correct' causes Unknown column errors.
     const entries = await this.learnEntryRepository.find({
       where: {
-        user: { id: user.id },
-        mode: learnMode,
+        session: { user, mode: learnMode },
       },
       order: {
         date: 'DESC',

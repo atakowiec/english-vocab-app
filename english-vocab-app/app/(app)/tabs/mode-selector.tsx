@@ -46,7 +46,7 @@ export default function ModeSelectorScreen() {
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={[styles.modeCardTouchable]} activeOpacity={.6}
-                          onPress={() => router.push("/(app)/modes/learning-mode")}>
+                          onPress={() => router.push("/(app)/modes/learning-mode-lobby")}>
           <SectionBox style={[styles.modeCard]}>
             <View style={styles.modeNameBox}>
               <Ionicons name="sparkles" size={25} color={"white"}/>

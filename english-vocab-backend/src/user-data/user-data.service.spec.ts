@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { UserDataService } from './user-data.service';
 import { User } from '../user/user.entity';
-import WordLearnEntry from '../learn-status/dto/word-learn-entry.entity';
+import LearnEntry from '../learn-status/entity/learn-entry.entity';
 
 // Helper to create a mock QueryBuilder with chainable methods
 function createMockQb<T extends object>() {
@@ -27,7 +27,7 @@ function createMockQb<T extends object>() {
 describe('UserDataService', () => {
   let service: UserDataService;
   let userRepo: jest.Mocked<Repository<User>>;
-  let entryRepo: jest.Mocked<Repository<WordLearnEntry>>;
+  let entryRepo: jest.Mocked<Repository<LearnEntry>>;
 
   beforeEach(async () => {
     const userRepoMock: Partial<jest.Mocked<Repository<User>>> = {
@@ -35,7 +35,7 @@ describe('UserDataService', () => {
       save: jest.fn(),
     };
 
-    const entryRepoMock: Partial<jest.Mocked<Repository<WordLearnEntry>>> = {
+    const entryRepoMock: Partial<jest.Mocked<Repository<LearnEntry>>> = {
       find: jest.fn(),
       findOne: jest.fn(),
       createQueryBuilder: jest.fn(),
@@ -45,13 +45,13 @@ describe('UserDataService', () => {
       providers: [
         UserDataService,
         { provide: getRepositoryToken(User), useValue: userRepoMock },
-        { provide: getRepositoryToken(WordLearnEntry), useValue: entryRepoMock },
+        { provide: getRepositoryToken(LearnEntry), useValue: entryRepoMock },
       ],
     }).compile();
 
     service = module.get(UserDataService);
     userRepo = module.get(getRepositoryToken(User));
-    entryRepo = module.get(getRepositoryToken(WordLearnEntry));
+    entryRepo = module.get(getRepositoryToken(LearnEntry));
   });
 
   it('should be defined', () => {
@@ -93,7 +93,7 @@ describe('UserDataService', () => {
   });
 
   it('getLastPlayedMode should return last mode or null', async () => {
-    const mode = 'SPEED_MODE' as any;
+    const mode = 'SPEED_TEST' as any;
     (entryRepo.findOne as jest.Mock).mockResolvedValueOnce({ mode, date: new Date() } as any);
 
     const user: User = { id: 10 } as any;
@@ -114,9 +114,9 @@ describe('UserDataService', () => {
       { correct: true } as any,
     ]);
 
-    await expect(service.getStreak('SPEED_MODE' as any, user)).resolves.toBe(2);
+    await expect(service.getStreak('SPEED_TEST' as any, user)).resolves.toBe(2);
     expect(entryRepo.find).toHaveBeenCalledWith({
-      where: { user: { id: user.id }, mode: 'SPEED_MODE' as any },
+      where: { user: { id: user.id }, mode: 'SPEED_TEST' as any },
       order: { date: 'DESC' },
       take: 100,
     });
@@ -131,14 +131,14 @@ describe('UserDataService', () => {
     ]);
     const streakSpy = jest.spyOn(service, 'getStreak').mockResolvedValue(4);
 
-    const res = await service.getUserProgress('SPEED_MODE' as any, user);
+    const res = await service.getUserProgress('SPEED_TEST' as any, user);
 
     expect(res).toEqual({ streak: 4, allAnswers: 3, correctAnswers: 2 });
-    expect(streakSpy).toHaveBeenCalledWith('SPEED_MODE' as any, user);
+    expect(streakSpy).toHaveBeenCalledWith('SPEED_TEST' as any, user);
   });
 
   it('getLearningStats should compose query and return counts', async () => {
-    const qb = createMockQb<WordLearnEntry>();
+    const qb = createMockQb<LearnEntry>();
     (entryRepo.createQueryBuilder as jest.Mock).mockReturnValue(qb);
 
     qb.getCount.mockResolvedValueOnce(1); // today
@@ -157,7 +157,7 @@ describe('UserDataService', () => {
   });
 
   it('getUserStreak should compute streak across calendar days with gaps and no activity today -> 0', async () => {
-    const qb = createMockQb<WordLearnEntry>();
+    const qb = createMockQb<LearnEntry>();
     (entryRepo.createQueryBuilder as jest.Mock).mockReturnValue(qb);
 
     const today = new Date();

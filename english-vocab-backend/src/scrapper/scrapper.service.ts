@@ -5,7 +5,7 @@ import { In, Repository } from 'typeorm';
 import { defaultWords } from './default-words';
 import { evaluate, FetchResponse, openPage } from '../utils/puppeteer.util';
 import { WordsService } from '../words/words.service';
-import WordEntity from '../words/word.entity';
+import WordEntity from '../words/dto/word.entity';
 import { lemmatize, LemmatizerType } from '../utils/lemmatizer.util';
 import { ConfigService } from '@nestjs/config';
 import { RelatedWordsResponse } from '../types/wordnik';
@@ -130,7 +130,7 @@ export class ScrapperService {
           tags: word.tags,
           examples: word.examples,
           other_forms: word.otherForms,
-          learnStatuses: [],
+          learnEntries: [],
         }),
       );
       infos.push(`saved word: ${word.word ?? wordText} - ${word.translation} - ${word.type}`);

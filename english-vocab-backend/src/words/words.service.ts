@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import WordEntity from './word.entity';
+import WordEntity from './dto/word.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import GameWord from './game-word.dto';
+import GameWord from './dto/game-word.dto';
 import { User } from '../user/user.entity';
-import { WordReport } from './word-report.entity';
+import { WordReport } from './dto/word-report.entity';
 
 @Injectable()
 export class WordsService {
@@ -75,19 +75,20 @@ export class WordsService {
     return word;
   }
 
-  async getNextWords(_learnMode: LearnMode, user: User): Promise<GameWord[]> {
-    this.logger.log(`Generating next words for user ${user.id}`);
+  async getWordsForLearningMode(user: User) {
+    return await this.getWordsForSpeedMode(user); // todo
+  }
+
+  async getWordsForSpeedMode(user: User): Promise<GameWord[]> {
     const randomWords = await this.repository
       .createQueryBuilder('word')
-      .leftJoinAndSelect('word.learnStatuses', 'learnStatus', 'learnStatus.userId = :userId', { userId: user.id })
+      .leftJoinAndSelect('word.learnEntries', 'learnEntry')
+      .leftJoinAndSelect('learnEntry.session', 'session', 'session.userId = :userId', { userId: user.id })
       .where('CHAR_LENGTH(word.word_en) < 20')
       .andWhere('word.banned = false')
-      .select()
       .orderBy('RAND()')
       .limit(20)
       .getMany();
-
-    this.logger.debug(`Fetched ${randomWords.length} random words for user ${user.id}`);
 
     const result: GameWord[] = [];
 
@@ -99,26 +100,11 @@ export class WordsService {
         word,
         similarEnWords: similarWords.map((w) => w.word_en),
         similarPlWords: similarPlWords.map((w) => w.word_pl),
-        wordLearnStatus: this.getLearnStatus(word),
+        learnEntries: word.learnEntries
       });
     }
 
-    this.logger.log(`Prepared ${result.length} game words for user ${user.id}`);
     return result;
-  }
-
-  private getLearnStatus(word: WordEntity): { allAnswers: number; correctAnswers: number; incorrectAnswers: number } {
-    const entries = (word as any)?.learnStatuses ?? [];
-    let correct = 0;
-    for (const entry of entries) {
-      if (entry?.correct) correct += 1;
-    }
-    const all = entries.length;
-    return {
-      allAnswers: all,
-      correctAnswers: correct,
-      incorrectAnswers: all - correct,
-    };
   }
 
   async saveWordReport(wordId: number, reason: string, user: User) {
@@ -131,7 +117,7 @@ export class WordsService {
     }
 
     // Use a transaction to ensure both operations succeed or fail together
-    await this.repository.manager.transaction(async (transactionalEntityManager) => {
+    await this.reportRepository.manager.transaction(async (transactionalEntityManager) => {
       await transactionalEntityManager.save(WordReport, { word, user, reason });
       await transactionalEntityManager.update(WordEntity, { id: wordId }, { banned: true });
     });

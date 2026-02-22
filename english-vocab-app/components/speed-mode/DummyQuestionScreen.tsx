@@ -2,13 +2,14 @@ import { ThemedText } from "@/components/theme/ThemedText";
 import { Animated, Dimensions, TouchableOpacity, View } from "react-native";
 import { useThemeColors } from "@/hooks/theme/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useSpeedModeData, WordType } from "@/context/SpeedModeContext";
+import { useSpeedModeData } from "@/context/SpeedModeContext";
 import { styles } from "@/styles/speed-test"
 import { useEffect, useRef, useState } from "react";
 import Explaination from "@/components/speed-mode/Explaination";
 import { ThemedView } from "@/components/theme/ThemedView";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useUserDataStore } from "@/hooks/store/userDataStore";
+import {WordType} from "@/context/GlobalLearningContext";
 
 const WINDOW_WIDTH = Dimensions.get("window").width;
 

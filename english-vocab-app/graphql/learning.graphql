@@ -1,26 +1,28 @@
 mutation saveAnswers($input: [GivenAnswerInput!]!) {
-    saveAnswers(input: $input)
+    saveAnswers(answers: $input)
 }
 
-query getNextWords($mode: String!) {
-    getNextWords(mode: $mode) {
+mutation getWords($mode: String!) {
+    getWords(mode: $mode) {
         word {
             id
             definition_en
             word_en
             word_pl
             examples
-            type
             base_word_en,
             other_forms,
-            tags
         }
         similarEnWords
         similarPlWords
-        wordLearnStatus {
-            allAnswers
-            correctAnswers
-            incorrectAnswers
+        learnEntries {
+            correct
+            date
+            mode
+            language
+            session {
+                mode
+            }
         }
     }
 }

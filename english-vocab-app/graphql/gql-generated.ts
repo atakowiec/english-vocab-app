@@ -35,17 +35,37 @@ export type ExpDataDto = {
 
 export type GameWord = {
   __typename?: 'GameWord';
+  learnEntries: Array<LearnEntry>;
   similarEnWords: Array<Scalars['String']['output']>;
   similarPlWords: Array<Scalars['String']['output']>;
   word: WordEntity;
-  wordLearnStatus: WordLearnStatusDto;
 };
 
 export type GivenAnswerInput = {
   correct: Scalars['Boolean']['input'];
   date: Scalars['DateTime']['input'];
+  distractors: Array<Scalars['String']['input']>;
+  language: Scalars['String']['input'];
   learnMode: Scalars['String']['input'];
   word_id: Scalars['Float']['input'];
+};
+
+export type LearnEntry = {
+  __typename?: 'LearnEntry';
+  correct: Scalars['Boolean']['output'];
+  date: Scalars['DateTime']['output'];
+  distractors: Array<Scalars['String']['output']>;
+  language: Scalars['String']['output'];
+  mode: Scalars['String']['output'];
+  session: LearningSession;
+  word: WordEntity;
+};
+
+export type LearningSession = {
+  __typename?: 'LearningSession';
+  mode: Scalars['String']['output'];
+  session_start: Scalars['DateTime']['output'];
+  user: User;
 };
 
 export type LearningStatsDto = {
@@ -70,10 +90,22 @@ export type ModeProgressDto = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  endSession: Scalars['Float']['output'];
+  getWords: Array<GameWord>;
   login: AuthPayload;
   register: Scalars['Boolean']['output'];
   saveAnswers: Scalars['Boolean']['output'];
   saveWordReport: Scalars['Boolean']['output'];
+};
+
+
+export type MutationEndSessionArgs = {
+  sessionId: Scalars['Float']['input'];
+};
+
+
+export type MutationGetWordsArgs = {
+  mode: Scalars['String']['input'];
 };
 
 
@@ -88,7 +120,7 @@ export type MutationRegisterArgs = {
 
 
 export type MutationSaveAnswersArgs = {
-  input: Array<GivenAnswerInput>;
+  answers: Array<GivenAnswerInput>;
 };
 
 
@@ -99,16 +131,10 @@ export type MutationSaveWordReportArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  getNextWords: Array<GameWord>;
   getUserData: UserDataDto;
   hello: Scalars['String']['output'];
   refreshToken: AuthPayload;
   wordOfTheDay: WordEntity;
-};
-
-
-export type QueryGetNextWordsArgs = {
-  mode: Scalars['String']['input'];
 };
 
 
@@ -141,6 +167,7 @@ export type UserDataDto = {
 
 export type WordEntity = {
   __typename?: 'WordEntity';
+  banned?: Maybe<Scalars['Boolean']['output']>;
   base_word_en?: Maybe<Scalars['String']['output']>;
   definition_en?: Maybe<Scalars['String']['output']>;
   examples: Array<Scalars['String']['output']>;
@@ -150,13 +177,6 @@ export type WordEntity = {
   type?: Maybe<Scalars['String']['output']>;
   word_en: Scalars['String']['output'];
   word_pl: Scalars['String']['output'];
-};
-
-export type WordLearnStatusDto = {
-  __typename?: 'WordLearnStatusDto';
-  allAnswers: Scalars['Float']['output'];
-  correctAnswers: Scalars['Float']['output'];
-  incorrectAnswers: Scalars['Float']['output'];
 };
 
 export type RefreshTokenQueryVariables = Exact<{
@@ -195,12 +215,12 @@ export type SaveAnswersMutationVariables = Exact<{
 
 export type SaveAnswersMutation = { __typename?: 'Mutation', saveAnswers: boolean };
 
-export type GetNextWordsQueryVariables = Exact<{
+export type GetWordsMutationVariables = Exact<{
   mode: Scalars['String']['input'];
 }>;
 
 
-export type GetNextWordsQuery = { __typename?: 'Query', getNextWords: Array<{ __typename?: 'GameWord', similarEnWords: Array<string>, similarPlWords: Array<string>, word: { __typename?: 'WordEntity', id: number, definition_en?: string | null, word_en: string, word_pl: string, examples: Array<string>, type?: string | null, base_word_en?: string | null, other_forms: Array<string>, tags: Array<string> }, wordLearnStatus: { __typename?: 'WordLearnStatusDto', allAnswers: number, correctAnswers: number, incorrectAnswers: number } }> };
+export type GetWordsMutation = { __typename?: 'Mutation', getWords: Array<{ __typename?: 'GameWord', similarEnWords: Array<string>, similarPlWords: Array<string>, word: { __typename?: 'WordEntity', id: number, definition_en?: string | null, word_en: string, word_pl: string, examples: Array<string>, type?: string | null, base_word_en?: string | null, other_forms: Array<string>, tags: Array<string> }, learnEntries: Array<{ __typename?: 'LearnEntry', correct: boolean, date: any, mode: string, language: string, session: { __typename?: 'LearningSession', mode: string } }> }> };
 
 export type WordOfTheDayQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -393,7 +413,7 @@ export type GetUserDataSuspenseQueryHookResult = ReturnType<typeof useGetUserDat
 export type GetUserDataQueryResult = Apollo.QueryResult<GetUserDataQuery, GetUserDataQueryVariables>;
 export const SaveAnswersDocument = gql`
     mutation saveAnswers($input: [GivenAnswerInput!]!) {
-  saveAnswers(input: $input)
+  saveAnswers(answers: $input)
 }
     `;
 export type SaveAnswersMutationFn = Apollo.MutationFunction<SaveAnswersMutation, SaveAnswersMutationVariables>;
@@ -422,9 +442,9 @@ export function useSaveAnswersMutation(baseOptions?: Apollo.MutationHookOptions<
 export type SaveAnswersMutationHookResult = ReturnType<typeof useSaveAnswersMutation>;
 export type SaveAnswersMutationResult = Apollo.MutationResult<SaveAnswersMutation>;
 export type SaveAnswersMutationOptions = Apollo.BaseMutationOptions<SaveAnswersMutation, SaveAnswersMutationVariables>;
-export const GetNextWordsDocument = gql`
-    query getNextWords($mode: String!) {
-  getNextWords(mode: $mode) {
+export const GetWordsDocument = gql`
+    mutation getWords($mode: String!) {
+  getWords(mode: $mode) {
     word {
       id
       definition_en
@@ -438,47 +458,44 @@ export const GetNextWordsDocument = gql`
     }
     similarEnWords
     similarPlWords
-    wordLearnStatus {
-      allAnswers
-      correctAnswers
-      incorrectAnswers
+    learnEntries {
+      correct
+      date
+      mode
+      language
+      session {
+        mode
+      }
     }
   }
 }
     `;
+export type GetWordsMutationFn = Apollo.MutationFunction<GetWordsMutation, GetWordsMutationVariables>;
 
 /**
- * __useGetNextWordsQuery__
+ * __useGetWordsMutation__
  *
- * To run a query within a React component, call `useGetNextWordsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetNextWordsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
+ * To run a mutation, you first call `useGetWordsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useGetWordsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
  *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const { data, loading, error } = useGetNextWordsQuery({
+ * const [getWordsMutation, { data, loading, error }] = useGetWordsMutation({
  *   variables: {
  *      mode: // value for 'mode'
  *   },
  * });
  */
-export function useGetNextWordsQuery(baseOptions: Apollo.QueryHookOptions<GetNextWordsQuery, GetNextWordsQueryVariables> & ({ variables: GetNextWordsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useGetWordsMutation(baseOptions?: Apollo.MutationHookOptions<GetWordsMutation, GetWordsMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetNextWordsQuery, GetNextWordsQueryVariables>(GetNextWordsDocument, options);
+        return Apollo.useMutation<GetWordsMutation, GetWordsMutationVariables>(GetWordsDocument, options);
       }
-export function useGetNextWordsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetNextWordsQuery, GetNextWordsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetNextWordsQuery, GetNextWordsQueryVariables>(GetNextWordsDocument, options);
-        }
-export function useGetNextWordsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetNextWordsQuery, GetNextWordsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetNextWordsQuery, GetNextWordsQueryVariables>(GetNextWordsDocument, options);
-        }
-export type GetNextWordsQueryHookResult = ReturnType<typeof useGetNextWordsQuery>;
-export type GetNextWordsLazyQueryHookResult = ReturnType<typeof useGetNextWordsLazyQuery>;
-export type GetNextWordsSuspenseQueryHookResult = ReturnType<typeof useGetNextWordsSuspenseQuery>;
-export type GetNextWordsQueryResult = Apollo.QueryResult<GetNextWordsQuery, GetNextWordsQueryVariables>;
+export type GetWordsMutationHookResult = ReturnType<typeof useGetWordsMutation>;
+export type GetWordsMutationResult = Apollo.MutationResult<GetWordsMutation>;
+export type GetWordsMutationOptions = Apollo.BaseMutationOptions<GetWordsMutation, GetWordsMutationVariables>;
 export const WordOfTheDayDocument = gql`
     query wordOfTheDay {
   wordOfTheDay {

@@ -8,13 +8,14 @@ import { ApolloDriver } from '@nestjs/apollo';
 import { ScrapperModule } from './scrapper/scrapper.module';
 import { WordsModule } from './words/words.module';
 import WordStatus from './scrapper/word-status.entity';
-import WordEntity from './words/word.entity';
-import WordLearnEntry from './learn-status/dto/word-learn-entry.entity';
+import WordEntity from './words/dto/word.entity';
+import LearnEntry from './learn-status/entity/learn-entry.entity';
 import { ConfigModule } from '@nestjs/config';
-import { LearnStatusModule } from './learn-status/learn-status.module';
+import { LearningModule } from './learn-status/learning.module';
 import { UserDataModule } from './user-data/user-data.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { WordReport } from './words/word-report.entity';
+import { WordReport } from './words/dto/word-report.entity';
+import LearningSession from './learn-status/entity/learning-session.entity';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { WordReport } from './words/word-report.entity';
       username: 'user',
       password: 'password',
       database: 'english_vocab_app',
-      entities: [User, WordStatus, WordEntity, WordLearnEntry, WordReport],
+      entities: [User, WordStatus, WordEntity, LearnEntry, WordReport, LearningSession],
       synchronize: true,
     }),
     ConfigModule.forRoot({
@@ -41,7 +42,7 @@ import { WordReport } from './words/word-report.entity';
     AuthModule,
     ScrapperModule,
     WordsModule,
-    LearnStatusModule,
+    LearningModule,
     UserDataModule,
   ],
   controllers: [],

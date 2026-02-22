@@ -2,6 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import ModeProgressDto from '../../learn-status/dto/mode-progress.dto';
 import ExpDataDto from './exp-data.dto';
 import LearningStatsDto from './learning-stats.dto';
+import { LearningMode } from '../../app.types';
 
 /**
  * A class that holds all the information about logged-in user
@@ -16,7 +17,7 @@ export default class UserDataDto {
   streak: number;
 
   @Field(() => String, { nullable: true })
-  lastPlayedMode: LearnMode | null;
+  lastPlayedMode: LearningMode | null;
 
   @Field(() => LearningStatsDto)
   learningStats: LearningStatsDto;

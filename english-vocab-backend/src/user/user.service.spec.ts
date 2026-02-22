@@ -37,7 +37,7 @@ describe('UserService', () => {
   });
 
   it('findById should call repository and return user when found', async () => {
-    const user: User = { id: 5, email: 'a@b.com', name: 'john', password: 'x', wordLearnEntries: [], exp: 0 } as User;
+    const user: User = { id: 5, email: 'a@b.com', name: 'john', password: 'x', sessions: [], exp: 0 } as User;
     (repository.findOne as jest.Mock).mockResolvedValue(user);
 
     const result = await service.findById(5);

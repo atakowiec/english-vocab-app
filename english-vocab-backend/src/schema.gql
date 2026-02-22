@@ -15,6 +15,27 @@ type WordEntity {
   banned: Boolean
 }
 
+type LearnEntry {
+  session: LearningSession!
+  word: WordEntity!
+  correct: Boolean!
+  date: DateTime!
+  mode: String!
+  distractors: [String!]!
+  language: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type LearningSession {
+  user: User!
+  mode: String!
+  session_start: DateTime!
+}
+
 type User {
   id: Int!
   email: String!
@@ -27,15 +48,9 @@ type AuthPayload {
   user: User!
 }
 
-type WordLearnStatusDto {
-  allAnswers: Float!
-  correctAnswers: Float!
-  incorrectAnswers: Float!
-}
-
 type GameWord {
   word: WordEntity!
-  wordLearnStatus: WordLearnStatusDto!
+  learnEntries: [LearnEntry!]!
   similarEnWords: [String!]!
   similarPlWords: [String!]!
 }
@@ -72,7 +87,6 @@ type Query {
   hello: String!
   refreshToken(refreshToken: String!): AuthPayload!
   wordOfTheDay: WordEntity!
-  getNextWords(mode: String!): [GameWord!]!
   getUserData: UserDataDto!
 }
 
@@ -80,7 +94,9 @@ type Mutation {
   register(input: RegisterInput!): Boolean!
   login(input: LoginInput!): AuthPayload!
   saveWordReport(wordId: Float!, reason: String!): Boolean!
-  saveAnswers(input: [GivenAnswerInput!]!): Boolean!
+  saveAnswers(answers: [GivenAnswerInput!]!): Boolean!
+  endSession(sessionId: Float!): Float!
+  getWords(mode: String!): [GameWord!]!
 }
 
 input RegisterInput {
@@ -99,9 +115,6 @@ input GivenAnswerInput {
   correct: Boolean!
   date: DateTime!
   learnMode: String!
+  distractors: [String!]!
+  language: String!
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime

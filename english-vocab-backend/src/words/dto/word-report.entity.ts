@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ObjectType } from '@nestjs/graphql';
 import WordEntity from './word.entity';
-import { User } from '../user/user.entity';
+import { User } from '../../user/user.entity';
 
 @ObjectType()
 @Entity({ name: 'word_report' })

@@ -36,7 +36,7 @@ export default function HomeScreen() {
 
   function continueLearning() {
     switch (lastPlayedMode) {
-      case "SPEED_MODE":
+      case "SPEED_TEST":
         router.push("/(app)/modes/speed-mode-lobby")
         break;
 

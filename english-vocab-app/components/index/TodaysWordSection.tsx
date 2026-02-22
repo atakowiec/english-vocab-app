@@ -97,7 +97,7 @@ export default function TodaysWordSection() {
             <ThemedText type={"defaultSemiBold"} style={{ marginTop: 10 }}>
               Definition
             </ThemedText>
-            <ThemedText type={"small"} colorKey={"text_secondary"}>
+            <ThemedText type={"small"} colorKey={"text_secondary"} style={{paddingRight: 40}}>
               {word?.definition_en ?? "..."}
             </ThemedText>
             {word?.examples && word?.examples.length > 0 && (
@@ -106,7 +106,7 @@ export default function TodaysWordSection() {
                   Example{word.examples.length > 1 ? "s" : ""}
                 </ThemedText>
                 {word.examples.map((example, i) => (
-                  <ThemedText type={"small"} colorKey={"text_secondary"} key={`${example}-${i}`}>
+                  <ThemedText type={"small"} colorKey={"text_secondary"} key={`${example}-${i}`} style={{paddingRight: 40}}>
                     - {example}
                   </ThemedText>
                 ))}
