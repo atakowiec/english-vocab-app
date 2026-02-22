@@ -9,11 +9,13 @@ import {ThemedView} from "@/components/theme/ThemedView";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {useUserDataStore} from "@/hooks/store/userDataStore";
 import {useEffect, useRef} from "react";
+import {useReportContext} from "@/context/ReportContext";
 
 
 export default function MainQuestionScreen() {
   const colors = useThemeColors()
-  const {currentWord, setProgressData, progressData, stage, showReportModal} = useSpeedModeData()
+  const {currentWord, setProgressData, progressData, stage} = useSpeedModeData()
+  const {showReportModal} = useReportContext()
   const streak = useUserDataStore(store => store.speedModeProgress.streak)
   const canPause = stage === "explaination_fade_in"
   const showAnswersTime = useRef(0) // this stores the time when the answers have been shown

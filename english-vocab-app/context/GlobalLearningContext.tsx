@@ -1,31 +1,23 @@
 import {createContext, ReactNode, RefObject, useContext, useEffect, useRef, useState} from "react";
-import {
-  GetWordsMutation,
-  GivenAnswerInput,
-  useGetWordsMutation,
-  useReportWordMutation,
-  useSaveAnswersMutation
-} from "@/graphql/gql-generated";
-import Toast from "react-native-toast-message";
-import ReportModal from "@/components/speed-mode/ReportModal";
+import {GetWordsMutation, GivenAnswerInput, useGetWordsMutation, useSaveAnswersMutation} from "@/graphql/gql-generated";
+import ReportContextProvider from "@/context/ReportContext";
 
 export type GameStage = "counting" | "answering" | "show_answer" | "explaination_fade_in" | "swipe_next"
 export type GlobalLearningContextType = {
   stage: GameStage;
   setStage: (stage: GameStage) => void;
-  showReportModal: () => void;
   wordsQueue: WordType[];
   registerAnswers: (data: Record<number, string>) => void;
   savedAnswersRef: RefObject<GivenAnswerInput[]>
-
-  progressData: ProgressData;
-  setProgressData: (data: ProgressData | ((data: ProgressData) => ProgressData)) => void;
 
   answerTime: number;
   setAnswerTime: (time: number) => void;
   setMode: (mode: LearnMode) => void;
   fetchNextWords: () => Promise<void>;
   nextWord: () => void;
+
+  progressData: ProgressData;
+  setProgressData: (data: ProgressData | ((data: ProgressData) => ProgressData)) => void;
 }
 
 export type WordType = GetWordsMutation["getWords"][0] & {
@@ -50,11 +42,6 @@ export default function GlobalLearningContextProvider({children}: Props) {
   const [mode, setMode] = useState<LearnMode>("LEARNING")
   const [stage, setStage] = useState<GameStage>("counting")
 
-  const [progressData, setProgressData] = useState<ProgressData>({target: 0, duration: 5000})
-
-  const [reportWord] = useReportWordMutation()
-  const [reportVisible, setReportVisible] = useState(false)
-
   const [answerTime, setAnswerTime] = useState(0)
   const [saveAnswers] = useSaveAnswersMutation({fetchPolicy: "network-only"})
   const savedAnswersRef = useRef<GivenAnswerInput[]>([])
@@ -65,53 +52,13 @@ export default function GlobalLearningContextProvider({children}: Props) {
     variables: {mode}
   })
 
+  const [progressData, setProgressData] = useState<ProgressData>({target: 0, duration: 5000})
+
   useEffect(() => {
     return () => {
       sendAnswers()
     }
   }, [])
-
-  function onReportModalClose() {
-    setReportVisible(false)
-    setStage("swipe_next")
-    nextWord()
-    setProgressData({target: 0.9999, duration: 500})
-  }
-
-  async function onReportModalSubmit(reason: string) {
-    const word = wordsQueue[0]
-
-    if (!word?.word?.id) {
-      return Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "No word to report",
-        visibilityTime: 2000,
-      })
-    }
-
-    await reportWord({
-      variables: {
-        wordId: word.word.id,
-        reason
-      }
-    })
-
-    Toast.show({
-      type: "info",
-      text1: "Report submitted successfully",
-      text2: "Thank you for your feedback!",
-      visibilityTime: 2000,
-    })
-  }
-
-  function showReportModal() {
-    setReportVisible(true)
-    setProgressData(prevState => ({
-      ...prevState,
-      stopped: true
-    }))
-  }
 
   const fetchNextWords = async () => {
     try {
@@ -194,7 +141,6 @@ export default function GlobalLearningContextProvider({children}: Props) {
       stage,
       setStage,
       wordsQueue: wordsQueue,
-      showReportModal,
       progressData,
       setProgressData,
       registerAnswers,
@@ -203,13 +149,11 @@ export default function GlobalLearningContextProvider({children}: Props) {
       setMode,
       fetchNextWords,
       nextWord,
-      savedAnswersRef
+      savedAnswersRef,
     }}>
-      <ReportModal isVisible={reportVisible}
-                   onClose={onReportModalClose}
-                   onSubmit={onReportModalSubmit}
-                   setVisible={setReportVisible}/>
-      {children}
+      <ReportContextProvider>
+        {children}
+      </ReportContextProvider>
     </GlobalLearningContext.Provider>
   )
 }

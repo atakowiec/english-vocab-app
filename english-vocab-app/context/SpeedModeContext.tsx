@@ -1,6 +1,10 @@
 import {createContext, ReactNode, useCallback, useContext, useEffect} from "react";
 import {usePreferences} from "@/context/PreferencesContext";
-import {GlobalLearningContextType, useGlobalLearningContext, WordType} from "@/context/GlobalLearningContext";
+import {
+  GlobalLearningContextType,
+  useGlobalLearningContext,
+  WordType
+} from "@/context/GlobalLearningContext";
 import {useUserDataStore} from "@/hooks/store/userDataStore";
 
 type SpeedModeContextData = {
@@ -20,10 +24,10 @@ export const SpeedModeProvider = ({children}: { children: ReactNode }) => {
     wordsQueue,
     registerAnswers,
     setStage,
-    setProgressData,
     answerTime,
     nextWord,
-    savedAnswersRef
+    savedAnswersRef,
+    setProgressData
   } = globalLearningContext
 
   const {getPreference} = usePreferences()
