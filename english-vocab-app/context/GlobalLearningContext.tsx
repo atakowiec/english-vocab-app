@@ -1,4 +1,4 @@
-import {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from "react";
+import {createContext, ReactNode, RefObject, useContext, useEffect, useRef, useState} from "react";
 import {
   GetWordsMutation,
   GivenAnswerInput,
@@ -8,7 +8,6 @@ import {
 } from "@/graphql/gql-generated";
 import Toast from "react-native-toast-message";
 import ReportModal from "@/components/speed-mode/ReportModal";
-import {useUserDataStore} from "@/hooks/store/userDataStore";
 
 export type GameStage = "counting" | "answering" | "show_answer" | "explaination_fade_in" | "swipe_next"
 export type GlobalLearningContextType = {
@@ -17,14 +16,16 @@ export type GlobalLearningContextType = {
   showReportModal: () => void;
   wordsQueue: WordType[];
   registerAnswers: (data: Record<number, string>) => void;
+  savedAnswersRef: RefObject<GivenAnswerInput[]>
 
   progressData: ProgressData;
   setProgressData: (data: ProgressData | ((data: ProgressData) => ProgressData)) => void;
-  progressCallback: () => void;
+
   answerTime: number;
   setAnswerTime: (time: number) => void;
   setMode: (mode: LearnMode) => void;
   fetchNextWords: () => Promise<void>;
+  nextWord: () => void;
 }
 
 export type WordType = GetWordsMutation["getWords"][0] & {
@@ -47,7 +48,6 @@ const GlobalLearningContext = createContext<GlobalLearningContextType | undefine
 
 export default function GlobalLearningContextProvider({children}: Props) {
   const [mode, setMode] = useState<LearnMode>("LEARNING")
-  const userData = useUserDataStore()
   const [stage, setStage] = useState<GameStage>("counting")
 
   const [progressData, setProgressData] = useState<ProgressData>({target: 0, duration: 5000})
@@ -160,39 +160,6 @@ export default function GlobalLearningContextProvider({children}: Props) {
     }
   }
 
-  const onProgressEnd = useCallback(() => {
-    if (stage === "answering") {
-      setStage("show_answer")
-      setProgressData({target: 0.0001, duration: 50})
-
-      // if the user didn't answer, save as incorrect
-      if (savedAnswersRef.current.at(-1)?.word_id !== wordsQueue[0].word.id) {
-        savedAnswersRef.current.push({
-          word_id: wordsQueue[0].word.id,
-          correct: false,
-          date: new Date(),
-          learnMode: mode,
-          distractors: [],
-          language: wordsQueue[0].language
-        })
-        updateStreak()
-      }
-    }
-    if (stage === "show_answer") {
-      setStage("explaination_fade_in")
-      setProgressData({target: 1, duration: 3000})
-    }
-    if (stage === "explaination_fade_in") {
-      setStage("swipe_next")
-      nextWord()
-      setProgressData({target: 0.9999, duration: 500})
-    }
-    if (stage === "swipe_next") {
-      setStage("answering")
-      setProgressData({target: 0, duration: answerTime * 1000})
-    }
-  }, [stage, answerTime])
-
   const registerAnswers = (data: Record<number, string>) => {
     setWordsQueue(prev => {
       const newWords = [...prev]
@@ -213,8 +180,6 @@ export default function GlobalLearningContextProvider({children}: Props) {
         })
       }
 
-      updateStreak()
-
       return newWords
     })
 
@@ -222,19 +187,6 @@ export default function GlobalLearningContextProvider({children}: Props) {
       return
     }
     sendAnswers()
-  }
-
-  const updateStreak = () => {
-    setTimeout(() => {
-      const correct = savedAnswersRef.current.at(-1)?.correct
-
-      userData.set({
-        speedModeProgress: {
-          ...userData.speedModeProgress,
-          streak: correct ? userData.speedModeProgress.streak + 1 : 0
-        }
-      })
-    })
   }
 
   return (
@@ -245,12 +197,13 @@ export default function GlobalLearningContextProvider({children}: Props) {
       showReportModal,
       progressData,
       setProgressData,
-      progressCallback: onProgressEnd,
       registerAnswers,
       answerTime,
       setAnswerTime,
       setMode,
       fetchNextWords,
+      nextWord,
+      savedAnswersRef
     }}>
       <ReportModal isVisible={reportVisible}
                    onClose={onReportModalClose}

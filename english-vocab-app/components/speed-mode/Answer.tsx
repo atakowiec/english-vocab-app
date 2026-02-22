@@ -1,9 +1,9 @@
-import { Animated, TouchableOpacity } from "react-native";
-import { ThemedText } from "@/components/theme/ThemedText";
-import { useThemeColors } from "@/hooks/theme/useThemeColor";
-import { styles } from "@/styles/speed-test";
-import { useSpeedModeData } from "@/context/SpeedModeContext";
-import { useEffect, useRef, useState } from "react";
+import {Animated, TouchableOpacity} from "react-native";
+import {ThemedText} from "@/components/theme/ThemedText";
+import {useThemeColors} from "@/hooks/theme/useThemeColor";
+import {styles} from "@/styles/speed-test";
+import {useSpeedModeData} from "@/context/SpeedModeContext";
+import {useEffect, useRef, useState} from "react";
 
 type LayoutData = { height: number, y: number }
 
@@ -12,10 +12,10 @@ type Props = {
   parentLayoutData: LayoutData
 };
 
-export default function Answer({ answer, parentLayoutData: parent }: Props) {
+export default function Answer({answer, parentLayoutData: parent}: Props) {
   const colors = useThemeColors();
-  const { currentWord, stage, setProgressData, wordsQueue, registerAnswers } = useSpeedModeData();
-  const [layoutData, setLayoutData] = useState<LayoutData>({ height: 0, y: 0 });
+  const {currentWord, stage, onAnswerClick} = useSpeedModeData();
+  const [layoutData, setLayoutData] = useState<LayoutData>({height: 0, y: 0});
 
   const animation = useRef(new Animated.Value(0)).current;
 
@@ -47,17 +47,6 @@ export default function Answer({ answer, parentLayoutData: parent }: Props) {
     }
   }, [stage]);
 
-  const onAnswerClick = (answer: string) => {
-    if (stage !== "answering" || wordsQueue[0].selectedAnswer) {
-      return
-    }
-
-    setProgressData({target: 0.0001, duration: 500})
-    registerAnswers({
-      [wordsQueue[0].word.id]: answer
-    })
-  }
-
   const targetY = parent.height - layoutData.height - layoutData.y + parent.y - 160;
 
   const translateY = animation.interpolate({
@@ -74,19 +63,19 @@ export default function Answer({ answer, parentLayoutData: parent }: Props) {
     <Animated.View
       style={{
         overflow: "hidden",
-        transform: [{ translateY }],
+        transform: [{translateY}],
         opacity: opacity
       }}
       onLayout={(e) => {
-        const { height, y } = e.nativeEvent.layout;
-        setLayoutData({ height, y });
+        const {height, y} = e.nativeEvent.layout;
+        setLayoutData({height, y});
       }}
     >
       <TouchableOpacity
-        style={[styles.answerButton, { backgroundColor, zIndex: valid ? 100 : 0 }]}
+        style={[styles.answerButton, {backgroundColor, zIndex: valid ? 100 : 0}]}
         onPress={() => onAnswerClick(answer)}
         activeOpacity={0.8}>
-        <ThemedText style={{ textAlign: "center" }}>{answer}</ThemedText>
+        <ThemedText style={{textAlign: "center"}}>{answer}</ThemedText>
       </TouchableOpacity>
     </Animated.View>
   );

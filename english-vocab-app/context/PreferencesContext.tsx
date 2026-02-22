@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type PreferencesContextType = {
@@ -9,7 +9,7 @@ type PreferencesContextType = {
 
 const PreferencesContext = createContext<PreferencesContextType | null>(null);
 
-export function PreferencesProvider({ children }: { children: ReactNode }) {
+export function PreferencesProvider({children}: { children: ReactNode }) {
   const [preferences, setPreferences] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
 
   function removePreference(key: string) {
     setPreferences((prev) => {
-      const { [key]: _, ...rest } = prev;
+      const {[key]: _, ...rest} = prev;
       return rest;
     });
 

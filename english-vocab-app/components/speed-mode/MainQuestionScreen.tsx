@@ -1,19 +1,19 @@
-import { ThemedText } from "@/components/theme/ThemedText";
-import { TouchableOpacity, View } from "react-native";
-import { useThemeColors } from "@/hooks/theme/useThemeColor";
-import { MaterialIcons } from "@expo/vector-icons";
+import {ThemedText} from "@/components/theme/ThemedText";
+import {TouchableOpacity, View} from "react-native";
+import {useThemeColors} from "@/hooks/theme/useThemeColor";
+import {MaterialIcons} from "@expo/vector-icons";
 import Answers from "@/components/speed-mode/Answers";
-import { useSpeedModeData } from "@/context/SpeedModeContext";
-import { styles } from "@/styles/speed-test"
-import { ThemedView } from "@/components/theme/ThemedView";
+import {useSpeedModeData} from "@/context/SpeedModeContext";
+import {styles} from "@/styles/speed-test"
+import {ThemedView} from "@/components/theme/ThemedView";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useUserDataStore } from "@/hooks/store/userDataStore";
-import { useEffect, useRef } from "react";
+import {useUserDataStore} from "@/hooks/store/userDataStore";
+import {useEffect, useRef} from "react";
 
 
 export default function MainQuestionScreen() {
   const colors = useThemeColors()
-  const { currentWord, setProgressData, progressData, stage, showReportModal } = useSpeedModeData()
+  const {currentWord, setProgressData, progressData, stage, showReportModal} = useSpeedModeData()
   const streak = useUserDataStore(store => store.speedModeProgress.streak)
   const canPause = stage === "explaination_fade_in"
   const showAnswersTime = useRef(0) // this stores the time when the answers have been shown
@@ -53,17 +53,17 @@ export default function MainQuestionScreen() {
       <View style={styles.optionsBox}>
         <ThemedView colorKey={"background_blue_3"} style={[styles.streakBox]}>
           <Ionicons name="flame-sharp" size={26} color="#F29D38"/>
-          <ThemedText style={{ fontSize: 19 }}>
+          <ThemedText style={{fontSize: 19}}>
             {streak}
           </ThemedText>
         </ThemedView>
         <View style={styles.optionsBox}>
-          {canPause && <TouchableOpacity style={[styles.optionButton, { backgroundColor: colors.background_blue_3 }]}
+          {canPause && <TouchableOpacity style={[styles.optionButton, {backgroundColor: colors.background_blue_3}]}
                                          onPress={toggle}
                                          activeOpacity={0.8}>
               <MaterialIcons name={progressData.stopped ? "play-arrow" : "pause"} size={24} color="white"/>
           </TouchableOpacity>}
-          <TouchableOpacity style={[styles.optionButton, { backgroundColor: colors.background_blue_3 }]}
+          <TouchableOpacity style={[styles.optionButton, {backgroundColor: colors.background_blue_3}]}
                             onPress={showReportModal}
                             activeOpacity={0.8}>
             <MaterialIcons name="report" size={24} color="white"/>
@@ -71,7 +71,7 @@ export default function MainQuestionScreen() {
         </View>
       </View>
       <View style={styles.wordBox}>
-        <ThemedText type={"title"} style={{ textAlign: "center" }}>
+        <ThemedText type={"title"} style={{textAlign: "center"}}>
           {currentWord!.wordText}
         </ThemedText>
       </View>
