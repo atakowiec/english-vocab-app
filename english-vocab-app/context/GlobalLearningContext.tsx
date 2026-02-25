@@ -1,6 +1,5 @@
 import {createContext, ReactNode, RefObject, useContext, useEffect, useRef, useState} from "react";
 import {GetWordsMutation, GivenAnswerInput, useGetWordsMutation, useSaveAnswersMutation} from "@/graphql/gql-generated";
-import ReportContextProvider from "@/context/ReportContext";
 
 export type GameStage = "counting" | "answering" | "show_answer" | "explaination_fade_in" | "swipe_next"
 export type GlobalLearningContextType = {
@@ -151,9 +150,7 @@ export default function GlobalLearningContextProvider({children}: Props) {
       nextWord,
       savedAnswersRef,
     }}>
-      <ReportContextProvider>
-        {children}
-      </ReportContextProvider>
+      {children}
     </GlobalLearningContext.Provider>
   )
 }
