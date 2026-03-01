@@ -8,7 +8,7 @@ export type ThemedTextProps = TextProps & {
   colorKey?: keyof ThemeColors;
 };
 
-export function ThemedText({style, colorKey = "text_primary", type = 'default', ...rest}: ThemedTextProps) {
+export function ThemedText({style, colorKey = "text_primary", type = 'default', children, ...rest}: ThemedTextProps) {
   const color = useThemeColors()[colorKey];
 
   return (
@@ -24,7 +24,9 @@ export function ThemedText({style, colorKey = "text_primary", type = 'default', 
         style,
       ]}
       {...rest}
-    />
+    >
+      {children}
+    </Text>
   );
 }
 

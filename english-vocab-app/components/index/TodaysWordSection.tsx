@@ -1,9 +1,9 @@
 import SectionBox from "@/components/index/SectionBox";
-import { ThemedText } from "@/components/theme/ThemedText";
-import { Animated, TouchableOpacity, View } from "react-native";
-import { FontAwesome6 } from "@expo/vector-icons";
-import { useWordOfTheDayLazyQuery, WordOfTheDayQuery } from "@/graphql/gql-generated";
-import { useEffect, useRef, useState } from "react";
+import {ThemedText} from "@/components/theme/ThemedText";
+import {Animated, TouchableOpacity, View} from "react-native";
+import {FontAwesome6} from "@expo/vector-icons";
+import {useWordOfTheDayLazyQuery, WordOfTheDayQuery} from "@/graphql/gql-generated";
+import {useEffect, useRef, useState} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type WordType = WordOfTheDayQuery["wordOfTheDay"]
@@ -34,11 +34,11 @@ export default function TodaysWordSection() {
       return JSON.parse(storedData);
     }
 
-    const response = await fetchWordOfTheDay({ fetchPolicy: "network-only" });
+    const response = await fetchWordOfTheDay({fetchPolicy: "network-only"});
     let newWord = response.data?.wordOfTheDay;
 
     if (!newWord) throw new Error("No word of the day found")
-    newWord = { ...newWord }
+    newWord = {...newWord}
 
     newWord.type = getWordType(newWord);
 
@@ -76,37 +76,37 @@ export default function TodaysWordSection() {
   return (
     <TouchableOpacity activeOpacity={0.6}
                       onPress={() => setCollapsed(p => !p)}>
-      <SectionBox style={{ gap: 20, alignItems: "flex-start" }}>
-        <FontAwesome6 name="book" size={34} color="white"/>
+      <SectionBox style={{gap: 20, alignItems: "flex-start"}}>
         <View>
+          <FontAwesome6 name="book" size={34} color="white"/>
+        </View>
+        <View style={{flex: 1}}>
           <ThemedText type={"default"}>
             Word of the day
           </ThemedText>
-          <View style={{ flexDirection: "row", gap: 10 }}>
+          <View style={{gap: 2}}>
             <ThemedText type={"small"} colorKey={"accent_blue"}>
               {word?.word_en ?? "..."} {word?.type ? `(${word?.type})` : null}
-            </ThemedText>
-            <ThemedText type={"small"} colorKey={"text_secondary"}>
-              -
             </ThemedText>
             <ThemedText type={"small"} colorKey={"text_secondary"}>
               {word?.word_pl ?? "..."}
             </ThemedText>
           </View>
-          <Animated.View style={{ maxHeight, overflowX: "hidden" }}>
-            <ThemedText type={"defaultSemiBold"} style={{ marginTop: 10 }}>
+          <Animated.View style={{maxHeight, overflow: "hidden"}}>
+            <ThemedText type={"defaultSemiBold"} style={{marginTop: 10}}>
               Definition
             </ThemedText>
-            <ThemedText type={"small"} colorKey={"text_secondary"} style={{paddingRight: 40}}>
+            <ThemedText type={"small"} colorKey={"text_secondary"} style={{paddingRight: 50}}>
               {word?.definition_en ?? "..."}
             </ThemedText>
             {word?.examples && word?.examples.length > 0 && (
               <>
-                <ThemedText type={"defaultSemiBold"} style={{ marginTop: 10 }}>
-                  Example{word.examples.length > 1 ? "s" : ""}
+                <ThemedText type={"defaultSemiBold"} style={{marginTop: 10}}>
+                  {word.examples.length > 1 ? "Examples" : "Example"}
                 </ThemedText>
                 {word.examples.map((example, i) => (
-                  <ThemedText type={"small"} colorKey={"text_secondary"} key={`${example}-${i}`} style={{paddingRight: 40}}>
+                  <ThemedText type={"small"} colorKey={"text_secondary"} key={`${example}-${i}`}
+                              style={{paddingRight: 40}}>
                     - {example}
                   </ThemedText>
                 ))}

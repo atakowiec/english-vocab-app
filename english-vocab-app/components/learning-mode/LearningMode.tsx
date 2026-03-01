@@ -1,16 +1,12 @@
-import {View} from "react-native";
-import {ThemedText} from "@/components/theme/ThemedText";
+import PairModeScreen from "@/components/learning-mode/PairModeScreen";
+import WordsIndicator from "@/components/learning-mode/WordsIndicator";
 
-type Props = {};
-
-export function LearningMode(props: Props) {
-
+export function LearningMode() {
 
   return (
-    <View>
-      <ThemedText>
-
-      </ThemedText>
-    </View>
+    <>
+      <WordsIndicator/>
+      <PairModeScreen/>
+    </>
   );
 }

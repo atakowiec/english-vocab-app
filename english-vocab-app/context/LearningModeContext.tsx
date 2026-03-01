@@ -1,19 +1,22 @@
 import {createContext, ReactNode, useContext, useEffect} from "react";
-import {useGlobalLearningContext} from "@/context/GlobalLearningContext";
+import {GlobalLearningContextType, useGlobalLearningContext} from "@/context/GlobalLearningContext";
 
-type LearningModeContextType = {}
+type LearningModeContextType = GlobalLearningContextType & {}
 
 const LearningModeContext = createContext<LearningModeContextType | undefined>(undefined);
 
-export default function LearningModeContextProvider({ children }: { children: ReactNode }) {
-  const {setMode} = useGlobalLearningContext()
+export default function LearningModeContextProvider({children}: { children: ReactNode }) {
+  const globalLearningContext = useGlobalLearningContext()
+  const {setMode} = globalLearningContext
 
   useEffect(() => {
     setMode("LEARNING")
   }, []);
 
   return (
-    <LearningModeContext.Provider value={{}}>
+    <LearningModeContext.Provider value={{
+      ...globalLearningContext
+    }}>
       {children}
     </LearningModeContext.Provider>
   )
