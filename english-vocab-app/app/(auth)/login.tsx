@@ -1,14 +1,14 @@
-import { View } from "react-native";
-import { Link, useRouter } from "expo-router";
+import {View} from "react-native";
+import {Link, useRouter} from "expo-router";
 import ThemedInput from "@/components/theme/ThemedInput";
 import ThemedButton from "@/components/theme/ThemedButton";
-import { ThemedText } from "@/components/theme/ThemedText";
+import {ThemedText} from "@/components/theme/ThemedText";
 import HeightGap from "@/components/HeightGap";
-import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { ApolloError } from "@apollo/client";
-import { GraphQLFormattedError } from "@/app";
-import { styles } from "@/app/(auth)/register";
+import {useState} from "react";
+import {useAuth} from "@/context/AuthContext";
+import {ApolloError} from "@apollo/client";
+import {GraphQLFormattedError} from "@/app";
+import {styles} from "@/app/(auth)/register";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -39,7 +39,7 @@ export default function LoginScreen() {
         const errors = error.graphQLErrors[0] as GraphQLFormattedError
         setErrors(errors.extensions?.errors ?? {})
       } else {
-        setErrors({ general: "Unexpected error occurred. Please try again later." })
+        setErrors({general: "Unexpected error occurred. Please try again later."})
       }
       return
     }
@@ -57,7 +57,7 @@ export default function LoginScreen() {
                      autoCorrect={false}
                      value={email}
                      onChangeText={setEmail}/>
-        <ThemedText style={[styles.error, { display: errors.name ? "flex" : "none" }]}>
+        <ThemedText style={[styles.error, {display: errors.name ? "flex" : "none"}]}>
           {errors.name}
         </ThemedText>
         <ThemedInput placeholder="Password"
@@ -66,18 +66,18 @@ export default function LoginScreen() {
                      style={[styles.input, errors.name && styles.errorInput]}
                      value={password}
                      onChangeText={setPassword}/>
-        <ThemedText style={[styles.error, { display: errors.password ? "flex" : "none" }]}>
+        <ThemedText style={[styles.error, {display: errors.password ? "flex" : "none"}]}>
           {errors.password}
         </ThemedText>
       </View>
-      <ThemedText style={[styles.generalError, { display: errors.general ? "flex" : "none" }]}>
+      <ThemedText style={[styles.generalError, {display: errors.general ? "flex" : "none"}]}>
         {errors.general}
       </ThemedText>
       <ThemedButton onPress={handleLogin}>Login</ThemedButton>
 
       <HeightGap heightPercent={0.05}/>
 
-      <ThemedText type="default" style={{ textAlign: "center" }} colorKey="text_secondary">
+      <ThemedText type="default" style={{textAlign: "center"}} colorKey="text_secondary">
         Don&#39;t have an account?{" "}
         <ThemedText type="link" colorKey="text_secondary">
           <Link href="/(auth)/register">Sign up</Link>

@@ -41,11 +41,13 @@ export default function DefinitionModeScreen() {
       </View>
       <View style={styles.answersContainer}>
         {
-          answers.map(answer =>
-            <Answer answer={answer}
-                    selectedWord={selectedWord}
-                    correctAnswer={correctAnswer}
-                    onAnswerClick={onAnswerClick}/>)
+          answers.map((answer, i) =>
+            <Answer
+              key={answer+i}
+              answer={answer}
+              selectedWord={selectedWord}
+              correctAnswer={correctAnswer}
+              onAnswerClick={onAnswerClick}/>)
         }
       </View>
     </>
